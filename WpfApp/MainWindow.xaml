@@ -1,0 +1,97 @@
+﻿<Window x:Class="WpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp"
+        xmlns:core="clr-namespace:Core;assembly=Core"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <core:GameEngineViewModel x:Key="Engine"></core:GameEngineViewModel>
+    </Window.Resources>
+    <StackPanel>
+        <Menu>
+            <MenuItem Header="Game">
+                <MenuItem Header="New game"
+                          Command="{Binding Source={StaticResource Engine}, Path=NewGameCommand}" />
+                <MenuItem Header="Save game to file"
+                          Command="{Binding Source={StaticResource Engine}, Path=SaveToFileCommand}" />
+                <MenuItem Header="Load game from file"
+                          Command="{Binding Source={StaticResource Engine}, Path=LoadFromFileCommand}" />
+                <Separator />
+                <MenuItem Command="Close" />
+            </MenuItem>
+            <MenuItem Header="Load">
+                <!--todo : rework for auto multi undo-->
+                <MenuItem Header="Undo 1 level"
+                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                    <MenuItem.CommandParameter>
+                        <system:Int32>1</system:Int32>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <MenuItem Header="Undo 2 levels"
+                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                    <MenuItem.CommandParameter>
+                        <system:Int32>2</system:Int32>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <MenuItem Header="Undo 3 levels"
+                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                    <MenuItem.CommandParameter>
+                        <system:Int32>3</system:Int32>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+                <MenuItem Header="Undo 4 levels"
+                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                    <MenuItem.CommandParameter>
+                        <system:Int32>4</system:Int32>
+                    </MenuItem.CommandParameter>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ItemsControl Grid.Column="0"
+                          ItemsSource="{Binding Source={StaticResource Engine}, Path=Cells}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Background="LightGray"
+                                     Rows="{Binding Source={StaticResource Engine}, Path=GridSize.Height}"
+                                     Columns="{Binding Source={StaticResource Engine}, Path=GridSize.Width}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button BorderThickness="2" BorderBrush="Blue"
+                                MinWidth="30"
+                                MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
+                                Content="{Binding Path=State}"
+                                Command="{Binding Source={StaticResource Engine}, Path=BuildTowerCommand}"
+                                CommandParameter="{Binding}">
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <StackPanel Grid.Column="1">
+                <Label ContentStringFormat="{}Lives left: {0}"
+                       Content="{Binding Source={StaticResource Engine}, Path=Lives}"/>
+                <Label ContentStringFormat="{}Current Gold: {0}"
+                       Content="{Binding Source={StaticResource Engine}, Path=Gold}"/>
+                <Label ContentStringFormat="{}Current Level: {0}"
+                       Content="{Binding Source={StaticResource Engine}, Path=Level}"/>
+                <Label ContentStringFormat="{}Current Turn: {0} (!)"
+                       ToolTip="after 10 turns enemies one by one will go to end"
+                       Content="{Binding Source={StaticResource Engine}, Path=CurrentTurn}"/>
+                <Label ContentStringFormat="{}Enemies left: {0}"
+                       Content="{Binding Source={StaticResource Engine}, Path=EnemiesLeft}"/>
+                <Button Content="Start Next Level"
+                        Command="{Binding Source={StaticResource Engine}, Path=NextLevelCommand}"/>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</Window>
