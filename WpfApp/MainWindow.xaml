@@ -26,25 +26,25 @@
             <MenuItem Header="Load">
                 <!--todo : rework for auto multi undo-->
                 <MenuItem Header="Undo 1 level"
-                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                          Command="{Binding Source={StaticResource Engine}, Path=UndoTurnCommand}">
                     <MenuItem.CommandParameter>
                         <system:Int32>1</system:Int32>
                     </MenuItem.CommandParameter>
                 </MenuItem>
                 <MenuItem Header="Undo 2 levels"
-                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                          Command="{Binding Source={StaticResource Engine}, Path=UndoTurnCommand}">
                     <MenuItem.CommandParameter>
                         <system:Int32>2</system:Int32>
                     </MenuItem.CommandParameter>
                 </MenuItem>
                 <MenuItem Header="Undo 3 levels"
-                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                          Command="{Binding Source={StaticResource Engine}, Path=UndoTurnCommand}">
                     <MenuItem.CommandParameter>
                         <system:Int32>3</system:Int32>
                     </MenuItem.CommandParameter>
                 </MenuItem>
                 <MenuItem Header="Undo 4 levels"
-                          Command="{Binding Source={StaticResource Engine}, Path=LoadCommand}">
+                          Command="{Binding Source={StaticResource Engine}, Path=UndoTurnCommand}">
                     <MenuItem.CommandParameter>
                         <system:Int32>4</system:Int32>
                     </MenuItem.CommandParameter>
@@ -67,7 +67,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button BorderThickness="2" BorderBrush="Blue"
+                        <Button BorderThickness="1" BorderBrush="Blue"
                                 MinWidth="30"
                                 MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
                                 Content="{Binding Path=State}"
