@@ -17,7 +17,7 @@ namespace Core
         #endregion
 
         #region properties
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region auto
@@ -79,7 +79,7 @@ namespace Core
                     Timer.Stop();
             };
             GameStateSaver = new GameStateSaver();
-          
+
             #region Commands
 
             BuildTowerCommand = new ParameterisedDelegateCommand<GameCell>(BuildTowerExecute, BuildTowerCanExecute, this);
@@ -94,7 +94,7 @@ namespace Core
             LoadFromFileCommand = new VoidDelegateCommand(() => LoadGameFrom(file));
 
             #endregion
-            
+
             NewGame();
         }
         #endregion
@@ -119,22 +119,22 @@ namespace Core
                 gameState = new GameState(
                     new ObservableCollection<GameCell>
                     {
-                        new GameCell(CellState.Empty), new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                        new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                        new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty), new GameCell(CellState.Empty),
-                        new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                        new GameCell(CellState.Empty), new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty)
+                        new TowerCell(), new TowerCell(), new RoadCell(),   new TowerCell(),
+                        new TowerCell(), new RoadCell(),  new RoadCell(),   new TowerCell(),
+                        new TowerCell(), new RoadCell(),  new TowerCell(),  new TowerCell(),
+                        new TowerCell(), new RoadCell(),  new RoadCell(),   new TowerCell(),
+                        new TowerCell(), new TowerCell(), new RoadCell(),   new TowerCell()
                     },
                     new GameState.Size { Height = 5, Width = 4 });
             else
                 gameState = new GameState(
                     new ObservableCollection<GameCell>
                     {
-                       new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                       new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                       new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                       new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty),
-                       new GameCell(CellState.Empty), new GameCell(CellState.Road),  new GameCell(CellState.Empty)
+                       new TowerCell(), new RoadCell(),  new TowerCell(),
+                       new TowerCell(), new RoadCell(),  new TowerCell(),
+                       new TowerCell(), new RoadCell(),  new TowerCell(),
+                       new TowerCell(), new RoadCell(),  new TowerCell(),
+                       new TowerCell(), new RoadCell(),  new TowerCell()
                     },
                     new GameState.Size { Height = 5, Width = 3 });
 
@@ -147,7 +147,7 @@ namespace Core
         {
             lock (Locker)
             {
-                var towers = GameState.Cells.Count(cell => cell.State == CellState.Tower);
+                var towers = GameState.Cells.OfType<TowerCell>().Count(cell => cell.Tower != null);
                 GameState.EnemiesLeft -= towers + towers;
                 if (GameState.EnemiesLeft != 0)
                 {
@@ -165,16 +165,19 @@ namespace Core
 
         private void BuildTowerExecute(GameCell cell)
         {
-            cell.State = CellState.Tower;
+            var towerCell = cell as TowerCell;
+            if (towerCell == null) return;
+            towerCell.Build(new Tower());
             GameState.Gold -= 80;
         }
 
-        private bool BuildTowerCanExecute(GameCell cell) => cell.State == CellState.Empty && Gold >= 80;
+        private bool BuildTowerCanExecute(GameCell cell)
+            => cell is TowerCell && ((TowerCell) cell).Tower == null && Gold >= 80;
 
         private void NextLevelExecute()
         {
             StateOwner.Save();
-            GameState.EnemiesLeft = ++GameState.Level * GameState.Cells.Count(cell => cell.State == CellState.Road);
+            GameState.EnemiesLeft = ++GameState.Level * GameState.Cells.OfType<RoadCell>().Count();
             Timer.Start();
         }
 
@@ -227,7 +230,7 @@ namespace Core
             public bool CanExecute(object parameter) => CanExecutePredicate?.Invoke((T)parameter) ?? false;
 
             public abstract void Execute(object parameter);
-            
+
             protected void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
             #endregion

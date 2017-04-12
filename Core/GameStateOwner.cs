@@ -5,41 +5,41 @@ using System.Runtime.CompilerServices;
 
 namespace Core
 {
-    public class GameStateOwner : INotifyPropertyChanged
+    public sealed class GameStateOwner : INotifyPropertyChanged
     {
-        private readonly Stack<GameState> _states;
-
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public GameState CurrentGameState => _states.Peek();
+        private Stack<GameState> States { get; }
 
-        public int SavesCount => _states.Count - 1;
+        public GameState CurrentGameState => States.Peek();
 
-        public IEnumerable<GameState> GameStates => _states.ToArray();
+        public int SavesCount => States.Count - 1;
+
+        public IEnumerable<GameState> GameStates => States.ToArray();
 
         public GameStateOwner(GameState initialState)
         {
-            _states = new Stack<GameState>();
-            _states.Push(initialState);
+            States = new Stack<GameState>();
+            States.Push(initialState);
             Save();
         }
 
         public GameStateOwner(IEnumerable<GameState> gameStates)
         {
-            _states = new Stack<GameState>(gameStates.Reverse());
+            States = new Stack<GameState>(gameStates.Reverse());
             Save();
         }
 
         public void Save()
         {
-            _states.Push((GameState)_states.Peek().Clone());
+            States.Push((GameState)States.Peek().Clone());
             OnPropertyChanged(null);
         }
 
         public void Load()
         {
-            if (_states.Count > 1)
-                _states.Pop();
+            if (States.Count > 1)
+                States.Pop();
             OnPropertyChanged(null);
         }
 

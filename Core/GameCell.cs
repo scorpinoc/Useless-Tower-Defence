@@ -1,38 +1,35 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Core
 {
-    public sealed class GameCell : INotifyPropertyChanged
+    public abstract class GameCell : INotifyPropertyChanged, ICloneable
     {
-        public enum CellState
-        {
-            Empty,
-            Tower,
-            Road
-        }
+        private string _name;
 
-        private CellState _state;
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public CellState State
+        public string Name
         {
-            get { return _state; }
-            set
+            get { return _name; }
+            protected set
             {
-                if (_state == value) return;
-                _state = value;
+                if (_name == value) return;
+                _name = value;
                 OnPropertyChanged();
             }
         }
 
-        public GameCell(CellState cellState)
+        protected GameCell()
         {
-            State = cellState;
+            _name = GetType().Name;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public abstract object Clone();
+
     }
 }

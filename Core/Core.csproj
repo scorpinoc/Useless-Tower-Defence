@@ -46,6 +46,11 @@
     <Compile Include="GameStateOwner.cs" />
     <Compile Include="GameStateSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoadCell.cs" />
+    <Compile Include="TowerCell.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Full Class Diagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

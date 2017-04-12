@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Core
 {
-    public class GameState : INotifyPropertyChanged, ICloneable
+    public sealed class GameState : INotifyPropertyChanged, ICloneable
     {
         #region fields
 
@@ -105,7 +106,7 @@ namespace Core
 
         #endregion
 
-        #region event handlers
+        #region event invokers
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -146,7 +147,7 @@ namespace Core
 
         public object Clone()
             =>
-                new GameState(new ObservableCollection<GameCell>(Cells.Select(cell => new GameCell(cell.State))), GridSize)
+                new GameState(new ObservableCollection<GameCell>(Cells.Select(cell => (GameCell)cell.Clone())), GridSize)
                     .SetGoldTo(Gold)
                     .SetLevelTo(Level)
                     .SetEnemiesTo(EnemiesLeft)

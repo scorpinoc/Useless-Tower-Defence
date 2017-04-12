@@ -70,7 +70,7 @@
                         <Button BorderThickness="1" BorderBrush="Blue"
                                 MinWidth="30"
                                 MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
-                                Content="{Binding Path=State}"
+                                Content="{Binding Path=Name}"
                                 Command="{Binding Source={StaticResource Engine}, Path=BuildTowerCommand}"
                                 CommandParameter="{Binding}">
                         </Button>

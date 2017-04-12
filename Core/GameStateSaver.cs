@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace Core
 {
-    public class GameStateSaver
+    public sealed class GameStateSaver
     {
         public void SaveTo(string file, IEnumerable<GameState> states)
-            => new XElement("GameStateSaves",
+        {
+            new XElement("GameStateSaves",
                 states.Select(
                     state =>
                         new XElement(nameof(GameState),
@@ -18,13 +20,23 @@ namespace Core
                                 new XElement(nameof(state.Cells),
                                     state.Cells.Select(
                                         cell =>
-                                            new XElement(nameof(GameCell),
-                                                new XAttribute(nameof(GameCell.State), cell.State)))),
-                                new XElement(nameof(state.GridSize),
+                                        {
+                                            switch (cell.GetType().Name)
+                                            {
+                                                case nameof(RoadCell):
+                                                    return new XElement(nameof(RoadCell));
+                                                case nameof(TowerCell):
+                                                    return new XElement(nameof(TowerCell),
+                                                        new XAttribute(nameof(Tower), ((TowerCell) cell).Tower != null));
+                                                default:
+                                                    return null;
+                                            }
+                                        })),
+                                new XElement(nameof(GameState.Size),
                                     new List<XAttribute>
                                     {
-                                        new XAttribute(nameof(state.GridSize.Height), state.GridSize.Height),
-                                        new XAttribute(nameof(state.GridSize.Width), state.GridSize.Width)
+                                        new XAttribute(nameof(GameState.Size.Height), state.GridSize.Height),
+                                        new XAttribute(nameof(GameState.Size.Width), state.GridSize.Width)
                                     }),
                                 new XAttribute(nameof(GameState.Lives), state.Lives),
                                 new XAttribute(nameof(GameState.Gold), state.Gold),
@@ -32,13 +44,7 @@ namespace Core
                                 new XAttribute(nameof(GameState.CurrentTurn), state.CurrentTurn),
                                 new XAttribute(nameof(GameState.EnemiesLeft), state.EnemiesLeft)
                             }))).Save(file);
-        // // old code
-        //  new XElement("GameStateSaves",
-        //    states.Select(
-        //        state =>
-        //            new XElement(nameof(GameState),
-        //                typeof (GameState).GetProperties()
-        //                    .Select(info => new XAttribute(info.Name, info.GetValue(state)))))).Save(file);
+        }
 
         public IEnumerable<GameState> LoadFrom(string file)
         {
@@ -47,16 +53,27 @@ namespace Core
             return XElement.Load(file).Elements().Select(element =>
             {
                 var gameCells =
-                    element.Element((nameof(GameState.Cells)))?
+                    element.Element(nameof(GameState.Cells))?
                         .Elements()
-                        .Select(
+                        .Select(new Func<XElement, GameCell>(
                             xElement =>
-                                new GameCell(
-                                    (GameCell.CellState)
-                                        Enum.Parse(typeof(GameCell.CellState),
-                                            xElement.Attribute(nameof(GameCell.State))?.Value ??
-                                            GameCell.CellState.Empty.ToString())));
-                var gridSizeElement = element.Element(nameof(GameState.GridSize));
+                            {
+                                switch (xElement.Name.ToString())
+                                {
+                                    case nameof(RoadCell):
+                                        return new RoadCell();
+                                    case nameof(TowerCell):
+                                        return
+                                            new TowerCell(
+                                                bool.Parse(xElement.Attribute(nameof(Tower))?.Value ?? string.Empty)
+                                                    ? new Tower()
+                                                    : null);
+                                    default:
+                                        return null;
+                                }
+                            }));
+                
+                var gridSizeElement = element.Element(nameof(GameState.Size));
                 var size = new GameState.Size
                 {
                     Width = getInt(gridSizeElement, nameof(GameState.Size.Width)),
@@ -65,7 +82,7 @@ namespace Core
 
                 var gameState =
                     new GameState(
-                        new ObservableCollection<GameCell>(gameCells ?? new[] { new GameCell(GameCell.CellState.Empty) }), size)
+                        new ObservableCollection<GameCell>(gameCells ?? new[] { new RoadCell() }), size)
                         .SetLivesTo(getInt(element, nameof(GameState.Lives)))
                         .SetGoldTo(getInt(element, nameof(GameState.Gold)))
                         .SetLevelTo(getInt(element, nameof(GameState.Level)))
