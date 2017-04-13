@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Core.GameStateSaver">
-    <Position X="10.25" Y="6.25" Width="1.5" />
+    <Position X="1" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>GameStateSaver.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Core.GameCell" BaseTypeListCollapsed="true">
-    <Position X="2.5" Y="1" Width="1.75" />
+    <Position X="8" Y="8.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -19,8 +19,9 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameEngineViewModel" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="3" Width="2" />
+    <Position X="3.25" Y="2.5" Width="3" />
     <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
@@ -42,19 +43,25 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>BUABAAQgsCEAAAAAIAKAAAgAhABAEACDBIAAAMIEIAU=</HashCode>
+      <HashCode>BUABIgwgsCEAAAAAKAKABAgAhABAEgCDBIIAAMIEIAU=</HashCode>
       <FileName>GameEngineViewModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_stateOwner" />
-      <Property Name="GameState" />
       <Property Name="GameStateSaver" />
       <Property Name="StateOwner" />
+      <Property Name="GameState" />
+      <Property Name="CurrentTowerType" />
+      <Property Name="TowerFactory" />
     </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="TowerTypes" />
+      <Property Name="Cells" />
+    </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameState" BaseTypeListCollapsed="true">
-    <Position X="1" Y="9" Width="1.75" />
+    <Position X="11" Y="4" Width="1.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -75,7 +82,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameStateOwner" BaseTypeListCollapsed="true">
-    <Position X="3.75" Y="6.5" Width="2.5" />
+    <Position X="12.75" Y="1" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAgIAAAAAAAAQAIAQAAAAAgAAAAAAAAAAAFAAAAAA=</HashCode>
       <FileName>GameStateOwner.cs</FileName>
@@ -84,35 +91,67 @@
       <Property Name="CurrentGameState" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
-      <Property Name="GameStates" />
       <Property Name="States" />
+      <Property Name="GameStates" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.TowerCell">
-    <Position X="1.5" Y="4.25" Width="1.5" />
+    <Position X="7" Y="11.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAEAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAAAAAIAEAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAABA=</HashCode>
       <FileName>TowerCell.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_tower" />
       <Property Name="Tower" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Core.RoadCell">
-    <Position X="3.75" Y="4.25" Width="1.5" />
+    <Position X="9.25" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>RoadCell.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Core.Tower">
-    <Position X="1.5" Y="6.5" Width="1.5" />
+  <Class Name="Core.TowerFactory">
+    <Position X="7.75" Y="1.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="Core.TowerFactory.TowerInfo">
+        <TypeIdentifier>
+          <NewMemberFileName>TowerFactory.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Core.TowerFactory.Tower">
+        <TypeIdentifier>
+          <NewMemberFileName>TowerFactory.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>TowerCell.cs</FileName>
+      <HashCode>AAAAABAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TowerFactory.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Interface Name="Core.ITower">
+    <Position X="4" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACABAAAAAAAAAAA=</HashCode>
+      <FileName>ITower.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="TowerType" />
+    </ShowAsAssociation>
+  </Interface>
+  <Enum Name="Core.TowerType">
+    <Position X="4" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIBAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TowerType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

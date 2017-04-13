@@ -27,7 +27,7 @@ namespace Core
                                                     return new XElement(nameof(RoadCell));
                                                 case nameof(TowerCell):
                                                     return new XElement(nameof(TowerCell),
-                                                        new XAttribute(nameof(Tower), ((TowerCell) cell).Tower != null));
+                                                        new XAttribute(nameof(ITower), ((TowerCell) cell).Tower?.TowerType ?? TowerType.Empty));
                                                 default:
                                                     return null;
                                             }
@@ -50,6 +50,8 @@ namespace Core
         {
             Func<XElement, string, int> getInt = (element, s) => int.Parse(element.Attribute(s)?.Value ?? "0");
 
+            var a = new TowerFactory();
+
             return XElement.Load(file).Elements().Select(element =>
             {
                 var gameCells =
@@ -65,9 +67,10 @@ namespace Core
                                     case nameof(TowerCell):
                                         return
                                             new TowerCell(
-                                                bool.Parse(xElement.Attribute(nameof(Tower))?.Value ?? string.Empty)
-                                                    ? new Tower()
-                                                    : null);
+                                                a.GetTower(
+                                                    (TowerType)
+                                                        Enum.Parse(typeof (TowerType),
+                                                            xElement.Attribute(nameof(ITower))?.Value ?? string.Empty)));
                                     default:
                                         return null;
                                 }

@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp"
         xmlns:core="clr-namespace:Core;assembly=Core"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
@@ -51,12 +50,12 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <Grid>
+        <Grid Margin="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <ItemsControl Grid.Column="0"
+            <ItemsControl Grid.Column="0" Margin="1"
                           ItemsSource="{Binding Source={StaticResource Engine}, Path=Cells}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -67,7 +66,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button BorderThickness="1" BorderBrush="Blue"
+                        <Button BorderThickness="0.5" BorderBrush="Blue"
                                 MinWidth="30"
                                 MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
                                 Content="{Binding Path=Name}"
@@ -77,7 +76,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <StackPanel Grid.Column="1">
+            <StackPanel Grid.Column="1" Margin="1">
                 <Label ContentStringFormat="{}Lives left: {0}"
                        Content="{Binding Source={StaticResource Engine}, Path=Lives}"/>
                 <Label ContentStringFormat="{}Current Gold: {0}"
@@ -93,5 +92,23 @@
                         Command="{Binding Source={StaticResource Engine}, Path=NextLevelCommand}"/>
             </StackPanel>
         </Grid>
+        <ItemsControl Margin="1"
+                      ItemsSource="{Binding Source={StaticResource Engine}, Path=TowerTypes}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <!--todo add inforamtive content -->
+                    <Button Margin="1"
+                            Content="{Binding}"
+                            Command="{Binding Source={StaticResource Engine}, Path=SetTowerTypeCommand}"
+                            CommandParameter="{Binding}">
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 </Window>

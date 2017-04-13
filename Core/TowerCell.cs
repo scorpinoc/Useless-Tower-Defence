@@ -2,37 +2,35 @@
 {
     public sealed class TowerCell : GameCell
     {
-        private Tower _tower;
+        private ITower _tower;
 
-        public Tower Tower
+        public bool Buildable { get; private set; }
+
+        public ITower Tower
         {
             get { return _tower; }
             private set
             {
-                if (_tower == value) return;
                 _tower = value;
-                if (_tower != null)
-                    Name = _tower.GetType().Name;
+                Name = _tower?.TowerType.ToString();
                 OnPropertyChanged();
             }
         }
 
-        public TowerCell(Tower tower = null)
+        public TowerCell(ITower tower = null)
         {
-            Tower = tower;
+            Buildable = true;
+            Build(tower);
         }
 
-        public void Build(Tower tower)
+        public void Build(ITower tower)
         {
-            if (Tower == null)
-                Tower = tower;
+            if (!Buildable) return;
+            Tower = tower;
+            if (Tower == null) return;
+            Buildable = Tower.TowerType == TowerType.Empty;
         }
 
         public override object Clone() => new TowerCell(Tower);
-    }
-
-    public class Tower
-    {
-        // TODO : implement
     }
 }
