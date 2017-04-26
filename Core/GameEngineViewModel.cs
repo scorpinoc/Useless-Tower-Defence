@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Input;
+using static Core.TowerFactory;
 using Timer = System.Timers.Timer;
 
 namespace Core
@@ -54,6 +55,7 @@ namespace Core
                 };
                 // ReSharper disable once ExplicitCallerInfoArgument
                 OnPropertyChanged(null);
+                CurrentTowerType = TowerType.Empty;
             }
         }
 
@@ -95,7 +97,7 @@ namespace Core
             };
             GameStateSaver = new GameStateSaver();
             TowerFactory = new TowerFactory();
-            TowerTypes = Enum.GetValues(typeof(TowerType)).Cast<TowerType>().Skip(1);
+            TowerTypes = Enum.GetValues(typeof(TowerType)).Cast<TowerType>().Skip(1); // todo check for skip TowerType.Empty
 
             #region Commands
 
@@ -186,14 +188,14 @@ namespace Core
             var towerCell = cell as TowerCell;
             if (towerCell == null) return;
             var towerInfo = TowerFactory.GeTowerInfoFor(CurrentTowerType);
-            towerCell.Build(TowerFactory.GetTower(towerInfo));
+            towerCell.Build(towerInfo.GetTower());
             GameState.Gold -= towerInfo.Cost;
         }
 
-        private bool BuildTowerCanExecute(GameCell cell)
+        private bool BuildTowerCanExecute(GameCell cell) // todo buildable to  gameState
             =>
-                ((cell as TowerCell)?.Buildable ?? false) && CurrentTowerType != TowerType.Empty &&
-                SetTowerTypeCanExecute(CurrentTowerType);
+                GameState.Cells.Contains(cell) && ((cell as TowerCell)?.Buildable ?? false) &&
+                CurrentTowerType != TowerType.Empty && SetTowerTypeCanExecute(CurrentTowerType);
 
         private void NextLevelExecute()
         {
@@ -299,3 +301,4 @@ namespace Core
         #endregion
     }
 }
+//303

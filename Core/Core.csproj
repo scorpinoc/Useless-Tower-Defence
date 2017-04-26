@@ -48,9 +48,9 @@
     <Compile Include="ITower.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoadCell.cs" />
+    <Compile Include="Tower.cs" />
     <Compile Include="TowerCell.cs" />
     <Compile Include="TowerFactory.cs" />
-    <Compile Include="TowerType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Full Class Diagram.cd" />

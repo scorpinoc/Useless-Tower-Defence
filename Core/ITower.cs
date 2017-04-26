@@ -4,7 +4,7 @@ namespace Core
 {
     public interface ITower : ICloneable
     {
-        TowerType TowerType { get; }
+        string Name { get; }
 
         int Power { get; }
     }

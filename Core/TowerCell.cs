@@ -4,7 +4,7 @@
     {
         private ITower _tower;
 
-        public bool Buildable { get; private set; }
+        public bool Buildable => Tower == null || Tower.Power != 0;
 
         public ITower Tower
         {
@@ -12,14 +12,13 @@
             private set
             {
                 _tower = value;
-                Name = _tower?.TowerType.ToString();
+                Name = _tower?.Name;
                 OnPropertyChanged();
             }
         }
 
         public TowerCell(ITower tower = null)
         {
-            Buildable = true;
             Build(tower);
         }
 
@@ -27,10 +26,8 @@
         {
             if (!Buildable) return;
             Tower = tower;
-            if (Tower == null) return;
-            Buildable = Tower.TowerType == TowerType.Empty;
         }
 
-        public override object Clone() => new TowerCell(Tower);
+        public override object Clone() => new TowerCell((ITower)Tower?.Clone());
     }
 }

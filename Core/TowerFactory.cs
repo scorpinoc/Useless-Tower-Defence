@@ -4,15 +4,21 @@ namespace Core
 {
     public class TowerFactory
     {
+        public enum TowerType
+        {
+            Empty,
+            SimpleTower,
+            PowerfullTower
+        }
+
         #region methods
 
-        #region pure methods
         public TowerInfo GeTowerInfoFor(TowerType towerType)
         {
             switch (towerType)
             {
                 case TowerType.Empty:
-                    return null;
+                    return new TowerInfo(TowerType.Empty, 0, 0);
                 case TowerType.SimpleTower:
                     return new TowerInfo(TowerType.SimpleTower, 1, 50);
                 case TowerType.PowerfullTower:
@@ -22,11 +28,7 @@ namespace Core
             }
         }
 
-        public ITower GetTower(TowerType towerType) => GetTower(GeTowerInfoFor(towerType));
-
-        public ITower GetTower(TowerInfo towerInfo) => new Tower(towerInfo);
-
-        #endregion
+        public ITower GetTower(TowerType towerType) => GeTowerInfoFor(towerType).GetTower();
 
         #endregion
 
@@ -34,34 +36,22 @@ namespace Core
 
         public sealed class TowerInfo
         {
-            public TowerType TowerType { get; }
+            public string Name { get; }
             public int Power { get; }
             public int Cost { get; }
 
-            public TowerInfo(TowerType towerType, int power, int cost)
+            private TowerInfo(string name, int power, int cost)
             {
-                TowerType = towerType;
+                Name = name;
                 Power = power;
                 Cost = cost;
             }
-        }
 
-        private class Tower : ITower
-        {
-            public TowerType TowerType { get; }
-
-            public int Power { get; }
-
-            public Tower(int power, TowerType towerType)
-            {
-                Power = power;
-                TowerType = towerType;
-            }
-            public Tower(TowerInfo towerInfo)
-                : this(towerInfo?.Power ?? 0, towerInfo?.TowerType ?? TowerType.Empty)
+            public TowerInfo(TowerType towerType, int power, int cost)
+                : this(towerType.ToString(), power, cost)
             { }
 
-            public object Clone() => new Tower(Power, TowerType);
+            public ITower GetTower() => new Tower(Name, Power);
         }
 
         #endregion

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -15,42 +14,37 @@ namespace Core
                 states.Select(
                     state =>
                         new XElement(nameof(GameState),
-                            new List<object>
+                            new XElement(nameof(state.Cells), state.Cells.Select(cell =>
                             {
-                                new XElement(nameof(state.Cells),
-                                    state.Cells.Select(
-                                        cell =>
-                                        {
-                                            switch (cell.GetType().Name)
-                                            {
-                                                case nameof(RoadCell):
-                                                    return new XElement(nameof(RoadCell));
-                                                case nameof(TowerCell):
-                                                    return new XElement(nameof(TowerCell),
-                                                        new XAttribute(nameof(ITower), ((TowerCell) cell).Tower?.TowerType ?? TowerType.Empty));
-                                                default:
-                                                    return null;
-                                            }
-                                        })),
-                                new XElement(nameof(GameState.Size),
-                                    new List<XAttribute>
+                                switch (cell.GetType().Name)
+                                {
+                                    case nameof(RoadCell):
+                                        return new XElement(nameof(RoadCell));
+                                    case nameof(TowerCell):
                                     {
-                                        new XAttribute(nameof(GameState.Size.Height), state.GridSize.Height),
-                                        new XAttribute(nameof(GameState.Size.Width), state.GridSize.Width)
-                                    }),
-                                new XAttribute(nameof(GameState.Lives), state.Lives),
-                                new XAttribute(nameof(GameState.Gold), state.Gold),
-                                new XAttribute(nameof(GameState.Level), state.Level),
-                                new XAttribute(nameof(GameState.CurrentTurn), state.CurrentTurn),
-                                new XAttribute(nameof(GameState.EnemiesLeft), state.EnemiesLeft)
-                            }))).Save(file);
+                                        var tower = (cell as TowerCell)?.Tower;
+                                        return new XElement(nameof(TowerCell),
+                                            new XElement(nameof(ITower),
+                                                new XAttribute(nameof(ITower.Name), tower?.Name ?? string.Empty),
+                                                new XAttribute(nameof(ITower.Power), tower?.Power ?? 0)));
+                                    }
+                                    default:
+                                        return null;
+                                }
+                            })),
+                            new XElement(nameof(GameState.Size),
+                                new XAttribute(nameof(GameState.Size.Height), state.GridSize.Height),
+                                new XAttribute(nameof(GameState.Size.Width), state.GridSize.Width)),
+                            new XAttribute(nameof(GameState.Lives), state.Lives),
+                            new XAttribute(nameof(GameState.Gold), state.Gold),
+                            new XAttribute(nameof(GameState.Level), state.Level),
+                            new XAttribute(nameof(GameState.CurrentTurn), state.CurrentTurn),
+                            new XAttribute(nameof(GameState.EnemiesLeft), state.EnemiesLeft)))).Save(file);
         }
 
         public IEnumerable<GameState> LoadFrom(string file)
         {
             Func<XElement, string, int> getInt = (element, s) => int.Parse(element.Attribute(s)?.Value ?? "0");
-
-            var a = new TowerFactory();
 
             return XElement.Load(file).Elements().Select(element =>
             {
@@ -65,17 +59,18 @@ namespace Core
                                     case nameof(RoadCell):
                                         return new RoadCell();
                                     case nameof(TowerCell):
-                                        return
-                                            new TowerCell(
-                                                a.GetTower(
-                                                    (TowerType)
-                                                        Enum.Parse(typeof (TowerType),
-                                                            xElement.Attribute(nameof(ITower))?.Value ?? string.Empty)));
+                                        {
+                                            var iTower = xElement.Nodes().OfType<XElement>().First(node => node.Name == nameof(ITower));
+                                            return
+                                                new TowerCell(new Tower(
+                                                    iTower.Attribute(nameof(ITower.Name))?.Value,
+                                                    Convert.ToInt32(iTower.Attribute(nameof(ITower.Power))?.Value)));
+                                        }
                                     default:
                                         return null;
                                 }
                             }));
-                
+
                 var gridSizeElement = element.Element(nameof(GameState.Size));
                 var size = new GameState.Size
                 {
