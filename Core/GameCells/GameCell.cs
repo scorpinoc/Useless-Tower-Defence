@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Core
+namespace Core.GameCells
 {
     public abstract class GameCell : INotifyPropertyChanged, ICloneable
     {

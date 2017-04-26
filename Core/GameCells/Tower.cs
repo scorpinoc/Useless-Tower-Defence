@@ -1,4 +1,4 @@
-namespace Core
+namespace Core.GameCells
 {
     public class Tower : ITower
     {

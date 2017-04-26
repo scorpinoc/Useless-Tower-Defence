@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Core.GameCells
 {
     public sealed class RoadCell : GameCell
     {

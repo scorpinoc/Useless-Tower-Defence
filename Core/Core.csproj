@@ -40,16 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameCell.cs" />
+    <Compile Include="GameCells\GameCell.cs" />
+    <Compile Include="GameCells\ITower.cs" />
+    <Compile Include="GameCells\RoadCell.cs" />
+    <Compile Include="GameCells\Tower.cs" />
+    <Compile Include="GameCells\TowerCell.cs" />
     <Compile Include="GameEngineViewModel.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="GameStateOwner.cs" />
     <Compile Include="GameStateSaver.cs" />
-    <Compile Include="ITower.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoadCell.cs" />
-    <Compile Include="Tower.cs" />
-    <Compile Include="TowerCell.cs" />
     <Compile Include="TowerFactory.cs" />
   </ItemGroup>
   <ItemGroup>

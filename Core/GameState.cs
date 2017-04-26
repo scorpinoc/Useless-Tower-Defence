@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Core.GameCells;
 
 namespace Core
 {
@@ -114,6 +114,8 @@ namespace Core
         #endregion
 
         #region pure methods
+
+        public bool Buildable(GameCell cell) => Cells.Contains(cell) && ((cell as TowerCell)?.Buildable ?? false);
 
         public GameState SetGoldTo(int gold)
         {

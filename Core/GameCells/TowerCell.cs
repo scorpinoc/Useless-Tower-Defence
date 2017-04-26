@@ -1,10 +1,10 @@
-﻿namespace Core
+namespace Core.GameCells
 {
     public sealed class TowerCell : GameCell
     {
         private ITower _tower;
 
-        public bool Buildable => Tower == null || Tower.Power != 0;
+        public bool Buildable => Tower == null || Tower.Power == 0; // todo create better check
 
         public ITower Tower
         {

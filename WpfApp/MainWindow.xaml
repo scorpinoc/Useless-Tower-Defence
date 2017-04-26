@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:core="clr-namespace:Core;assembly=Core"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:wpfApp="clr-namespace:WpfApp"
         mc:Ignorable="d"
         Title="MainWindow" SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <core:GameEngineViewModel x:Key="Engine"></core:GameEngineViewModel>
+        <core:GameEngineViewModel x:Key="Engine" />
     </Window.Resources>
     <StackPanel>
         <Menu>
@@ -66,7 +67,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button BorderThickness="0.5" BorderBrush="Blue"
+                        <Button BorderThickness="0.5" BorderBrush="CadetBlue"
                                 MinWidth="30"
                                 MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
                                 Content="{Binding Path=Name}"
@@ -101,14 +102,24 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <!--todo add inforamtive content -->
                     <Button Margin="1"
-                            Content="{Binding}"
                             Command="{Binding Source={StaticResource Engine}, Path=SetTowerTypeCommand}"
                             CommandParameter="{Binding}">
+                        <Button.Content>
+                            <StackPanel>
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=Name}" />
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=Power, StringFormat='{}Power: {0}'}" />
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=Cost,  StringFormat='{}Cost: {0}'}" />
+                            </StackPanel>
+                        </Button.Content>
                     </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StatusBar>
+            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Name, StringFormat='{}Currently chosen: {0}'}" />
+            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Power, StringFormat='{}Power: {0}'}" />
+            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Cost,  StringFormat='{}Cost: {0}'}" />
+        </StatusBar>
     </StackPanel>
 </Window>

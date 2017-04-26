@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Input;
+using Core.GameCells;
 using static Core.TowerFactory;
 using Timer = System.Timers.Timer;
 
@@ -15,7 +16,7 @@ namespace Core
     {
         #region fields
         private GameStateOwner _stateOwner;
-        private TowerType _currentTowerType;
+        private TowerInfo _currentTowerType;
         #endregion
 
         #region properties
@@ -28,7 +29,7 @@ namespace Core
         private GameStateSaver GameStateSaver { get; }
         private TowerFactory TowerFactory { get; }
 
-        public IEnumerable<TowerType> TowerTypes { get; }
+        public IEnumerable<TowerInfo> TowerTypes { get; }
 
         public ICommand NewGameCommand { get; }
         public ICommand BuildTowerCommand { get; }
@@ -49,17 +50,21 @@ namespace Core
                 _stateOwner.PropertyChanged += (sender, args) =>
                 {
                     // ReSharper disable once ExplicitCallerInfoArgument
+                    // ReSharper disable once RedundantArgumentDefaultValue
                     OnPropertyChanged(null);
                     // ReSharper disable once ExplicitCallerInfoArgument
                     _stateOwner.CurrentGameState.PropertyChanged += (o, eventArgs) => OnPropertyChanged(eventArgs.PropertyName);
                 };
                 // ReSharper disable once ExplicitCallerInfoArgument
+                // ReSharper disable once RedundantArgumentDefaultValue
                 OnPropertyChanged(null);
-                CurrentTowerType = TowerType.Empty;
+                CurrentTowerType = null;
             }
         }
 
-        private TowerType CurrentTowerType
+        private GameState GameState => StateOwner.CurrentGameState;
+
+        public TowerInfo CurrentTowerType
         {
             get { return _currentTowerType; }
             set
@@ -68,8 +73,6 @@ namespace Core
                 OnPropertyChanged();
             }
         }
-
-        private GameState GameState => StateOwner.CurrentGameState;
 
         public ObservableCollection<GameCell> Cells => GameState.Cells;
         public GameState.Size GridSize => GameState.GridSize;
@@ -84,6 +87,7 @@ namespace Core
         #endregion
 
         #region constructors
+
         public GameEngineViewModel()
         {
             Locker = new object();
@@ -97,16 +101,22 @@ namespace Core
             };
             GameStateSaver = new GameStateSaver();
             TowerFactory = new TowerFactory();
-            TowerTypes = Enum.GetValues(typeof(TowerType)).Cast<TowerType>().Skip(1); // todo check for skip TowerType.Empty
+            // todo check for skip TowerType.Empty
+            TowerTypes =
+                Enum.GetValues(typeof(TowerType))
+                    .Cast<TowerType>()
+                    .Skip(1)
+                    .Select(type => TowerFactory.GeTowerInfoFor(type));
 
             #region Commands
 
             BuildTowerCommand = new ParameterisedDelegateCommand<GameCell>(BuildTowerExecute, BuildTowerCanExecute, this);
             NextLevelCommand = new VoidDelegateCommand(NextLevelExecute, o => NextLevelCanExecute(), this);
+            SetTowerTypeCommand = new ParameterisedDelegateCommand<TowerInfo>(SetTowerTypeExecute, SetTowerTypeCanExecute, this);
+
             // menu commands
             NewGameCommand = new VoidDelegateCommand(NewGame);
             UndoTurnCommand = new ParameterisedDelegateCommand<int>(UndoGameExecute, UndoGameCanExecute, this);
-            SetTowerTypeCommand = new ParameterisedDelegateCommand<TowerType>(SetTowerTypeExecute, SetTowerTypeCanExecute, this);
 
             const string file = "test.xml";
             // todo : auto start from pause if enemies left ?
@@ -118,6 +128,7 @@ namespace Core
 
             NewGame();
         }
+
         #endregion
 
         #region methods
@@ -187,15 +198,12 @@ namespace Core
         {
             var towerCell = cell as TowerCell;
             if (towerCell == null) return;
-            var towerInfo = TowerFactory.GeTowerInfoFor(CurrentTowerType);
-            towerCell.Build(towerInfo.GetTower());
-            GameState.Gold -= towerInfo.Cost;
+            towerCell.Build(CurrentTowerType.GetTower());
+            GameState.Gold -= CurrentTowerType.Cost;
         }
 
-        private bool BuildTowerCanExecute(GameCell cell) // todo buildable to  gameState
-            =>
-                GameState.Cells.Contains(cell) && ((cell as TowerCell)?.Buildable ?? false) &&
-                CurrentTowerType != TowerType.Empty && SetTowerTypeCanExecute(CurrentTowerType);
+        private bool BuildTowerCanExecute(GameCell cell)
+            => GameState.Buildable(cell) && SetTowerTypeCanExecute(CurrentTowerType);
 
         private void NextLevelExecute()
         {
@@ -222,16 +230,16 @@ namespace Core
             StateOwner = new GameStateOwner(GameStateSaver.LoadFrom(file));
         }
 
-        private void SetTowerTypeExecute(TowerType towerType) => CurrentTowerType = towerType;
+        private void SetTowerTypeExecute(TowerInfo towerType) => CurrentTowerType = towerType;
 
-        private bool SetTowerTypeCanExecute(TowerType towerType) => TowerFactory.GeTowerInfoFor(towerType).Cost <= Gold;
+        private bool SetTowerTypeCanExecute(TowerInfo towerType) => towerType != null && towerType.Cost <= Gold;
 
         #endregion
 
         #endregion
 
         #region inner classes
-
+        // todo : change inner Action to Delegate
         private abstract class DelegateCommand<T> : ICommand
         {
             #region properties 
