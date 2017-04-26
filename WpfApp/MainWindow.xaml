@@ -89,6 +89,8 @@
                        Content="{Binding Source={StaticResource Engine}, Path=CurrentTurn}"/>
                 <Label ContentStringFormat="{}Enemies left: {0}"
                        Content="{Binding Source={StaticResource Engine}, Path=EnemiesLeft}"/>
+                <Label ContentStringFormat="{}Score: {0}"
+                       Content="{Binding Source={StaticResource Engine}, Path=Score}"/>
                 <Button Content="Start Next Level"
                         Command="{Binding Source={StaticResource Engine}, Path=NextLevelCommand}"/>
             </StackPanel>

@@ -22,13 +22,13 @@ namespace Core
                                     case nameof(RoadCell):
                                         return new XElement(nameof(RoadCell));
                                     case nameof(TowerCell):
-                                    {
-                                        var tower = (cell as TowerCell)?.Tower;
-                                        return new XElement(nameof(TowerCell),
-                                            new XElement(nameof(ITower),
-                                                new XAttribute(nameof(ITower.Name), tower?.Name ?? string.Empty),
-                                                new XAttribute(nameof(ITower.Power), tower?.Power ?? 0)));
-                                    }
+                                        {
+                                            var tower = (cell as TowerCell)?.Tower;
+                                            return new XElement(nameof(TowerCell),
+                                                new XElement(nameof(ITower),
+                                                    new XAttribute(nameof(ITower.Name), tower?.Name ?? string.Empty),
+                                                    new XAttribute(nameof(ITower.Power), tower?.Power ?? 0)));
+                                        }
                                     default:
                                         return null;
                                 }
@@ -40,7 +40,8 @@ namespace Core
                             new XAttribute(nameof(GameState.Gold), state.Gold),
                             new XAttribute(nameof(GameState.Level), state.Level),
                             new XAttribute(nameof(GameState.CurrentTurn), state.CurrentTurn),
-                            new XAttribute(nameof(GameState.EnemiesLeft), state.EnemiesLeft)))).Save(file);
+                            new XAttribute(nameof(GameState.EnemiesLeft), state.EnemiesLeft),
+                            new XAttribute(nameof(GameState.Score), state.Score)))).Save(file);
         }
 
         public IEnumerable<GameState> LoadFrom(string file)
@@ -83,6 +84,7 @@ namespace Core
                     new GameState(
                         new ObservableCollection<GameCell>(gameCells ?? new[] { new RoadCell() }), size)
                         .SetLivesTo(getInt(element, nameof(GameState.Lives)))
+                        .SetScoreTo(getInt(element, nameof(GameState.Score)))
                         .SetGoldTo(getInt(element, nameof(GameState.Gold)))
                         .SetLevelTo(getInt(element, nameof(GameState.Level)))
                         .SetCurrentTurnTo(getInt(element, nameof(GameState.CurrentTurn)))

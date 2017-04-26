@@ -74,9 +74,10 @@ namespace Core
             }
         }
 
-        public ObservableCollection<GameCell> Cells => GameState.Cells;
+        public IEnumerable<GameCell> Cells => GameState.Cells;
         public GameState.Size GridSize => GameState.GridSize;
 
+        public int Score => GameState.Score;
         public int Gold => GameState.Gold;
         public int Level => GameState.Level;
         public int EnemiesLeft => GameState.EnemiesLeft;
@@ -149,7 +150,7 @@ namespace Core
             GameState gameState;
             if (new Random().Next(2) == 0)
                 gameState = new GameState(
-                    new ObservableCollection<GameCell>
+                    new GameCell[]
                     {
                         new TowerCell(), new TowerCell(), new RoadCell(),   new TowerCell(),
                         new TowerCell(), new RoadCell(),  new RoadCell(),   new TowerCell(),
@@ -160,7 +161,7 @@ namespace Core
                     new GameState.Size { Height = 5, Width = 4 });
             else
                 gameState = new GameState(
-                    new ObservableCollection<GameCell>
+                    new GameCell[]
                     {
                        new TowerCell(), new RoadCell(),  new TowerCell(),
                        new TowerCell(), new RoadCell(),  new TowerCell(),

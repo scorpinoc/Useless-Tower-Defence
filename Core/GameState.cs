@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Core
     {
         #region fields
 
+        private int _score;
         private int _gold;
         private int _level;
         private int _enemiesLeft;
@@ -27,11 +29,21 @@ namespace Core
 
         public Size GridSize { get; }
 
-        public ObservableCollection<GameCell> Cells { get; }
+        public IEnumerable<GameCell> Cells { get; }
 
         #endregion
 
         #region delegate
+
+        public int Score
+        {
+            get { return _score; }
+            private set
+            {
+                _score = value;
+                OnPropertyChanged();
+            }
+        }
 
         public int Gold
         {
@@ -58,11 +70,16 @@ namespace Core
             get { return _enemiesLeft; }
             set
             {
+                // todo extract to EnemiesDied method
                 if (value < _enemiesLeft)
                 {
                     if (value < 0) value = 0;
-                    Gold += (_enemiesLeft - value) * Level;
+                    var killed = _enemiesLeft - value;
+                    Gold += killed * Level;
+
                     _enemiesLeft = value;
+
+                    Score += Math.Max(killed * Level + Gold / 100 - Math.Max(_enemiesLeft * CurrentTurn / 2, 0), killed);
                 }
                 else
                     _enemiesLeft = value;
@@ -96,9 +113,10 @@ namespace Core
 
         #region constructors
 
-        public GameState(ObservableCollection<GameCell> cells, Size gridSize)
+        public GameState(IEnumerable<GameCell> cells, Size gridSize)
         {
-            Cells = cells;
+            if (cells == null) throw new ArgumentNullException(nameof(cells));
+            Cells = cells as List<GameCell> ?? cells.ToList();
             GridSize = gridSize;
             Gold = 100;
             Lives = 10;
@@ -116,6 +134,12 @@ namespace Core
         #region pure methods
 
         public bool Buildable(GameCell cell) => Cells.Contains(cell) && ((cell as TowerCell)?.Buildable ?? false);
+
+        public GameState SetScoreTo(int score)
+        {
+            Score = score;
+            return this;
+        }
 
         public GameState SetGoldTo(int gold)
         {
@@ -147,9 +171,11 @@ namespace Core
             return this;
         }
 
+
         public object Clone()
             =>
                 new GameState(new ObservableCollection<GameCell>(Cells.Select(cell => (GameCell)cell.Clone())), GridSize)
+                    .SetScoreTo(Score)
                     .SetGoldTo(Gold)
                     .SetLevelTo(Level)
                     .SetEnemiesTo(EnemiesLeft)
@@ -165,3 +191,4 @@ namespace Core
         }
     }
 }
+// 192
