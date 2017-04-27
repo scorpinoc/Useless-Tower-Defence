@@ -8,6 +8,8 @@ namespace Core.GameCells
     {
         private string _name;
 
+        #region properties
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string Name
@@ -21,15 +23,21 @@ namespace Core.GameCells
             }
         }
 
+        #endregion
+        
+        protected GameCell(string name)
+        {
+            Name = name;
+        }
+
         protected GameCell()
         {
-            _name = GetType().Name;
+            Name = GetType().Name;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public abstract object Clone();
-
     }
 }

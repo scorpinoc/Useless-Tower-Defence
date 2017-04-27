@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:core="clr-namespace:Core;assembly=Core"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:wpfApp="clr-namespace:WpfApp"
         mc:Ignorable="d"
         Title="MainWindow" SizeToContent="WidthAndHeight">
     <Window.Resources>
@@ -60,15 +59,15 @@
                           ItemsSource="{Binding Source={StaticResource Engine}, Path=Cells}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Background="LightGray"
+                        <UniformGrid Background="OrangeRed"
                                      Rows="{Binding Source={StaticResource Engine}, Path=GridSize.Height}"
                                      Columns="{Binding Source={StaticResource Engine}, Path=GridSize.Width}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button BorderThickness="0.5" BorderBrush="CadetBlue"
-                                MinWidth="30"
+                        <Button BorderThickness="0.5" BorderBrush="CadetBlue" Margin="0.5"
+                                MinWidth="30" 
                                 MinHeight="{Binding RelativeSource={RelativeSource Self}, Path=MinWidth}"
                                 Content="{Binding Path=Name}"
                                 Command="{Binding Source={StaticResource Engine}, Path=BuildTowerCommand}"

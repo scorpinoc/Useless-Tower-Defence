@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="Core.GameCells.GameCell" Collapsed="true">
-    <Position X="5.5" Y="5.5" Width="1.5" />
+    <Position X="5.5" Y="8.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAAAIAAAAAQAgAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\GameCell.cs</FileName>
@@ -9,14 +9,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameCells.RoadCell">
-    <Position X="6.5" Y="6.75" Width="1.5" />
+    <Position X="7" Y="10" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\RoadCell.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Core.GameCells.Tower" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="16.25" Y="0.5" Width="1.5" />
+  <Class Name="Core.GameCells.Tower" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABAAAAAAAAABA=</HashCode>
       <FileName>GameCells\Tower.cs</FileName>
@@ -24,7 +24,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameCells.TowerCell">
-    <Position X="4.25" Y="6.75" Width="1.5" />
+    <Position X="4" Y="10" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAIAEAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\TowerCell.cs</FileName>
@@ -35,38 +35,38 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Core.GameEngineViewModel" BaseTypeListCollapsed="true">
-    <Position X="8.75" Y="1" Width="3" />
+    <Position X="9.5" Y="4.25" Width="3.25" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Core.GameEngineViewModel.DelegateCommand&lt;T&gt;" Collapsed="true">
+      <Class Name="Core.GameEngineViewModel.DelegateCommandBase&lt;T&gt;" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
-      <Class Name="Core.GameEngineViewModel.VoidDelegateCommand" Collapsed="true">
+      <Class Name="Core.GameEngineViewModel.DelegateCommand" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="Core.GameEngineViewModel.ParameterisedDelegateCommand&lt;T&gt;" Collapsed="true">
+      <Class Name="Core.GameEngineViewModel.DelegateCommand&lt;T&gt;" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>BUABIgwgsCEAAAAAKAKABAgAhABAEgCDBIIAAMIEIAU=</HashCode>
+      <HashCode>AUEBAwAsICAAAAwAKQKQBAiAhABQEgCDBIIAAEIUIAE=</HashCode>
       <FileName>GameEngineViewModel.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_stateOwner" />
       <Property Name="GameStateSaver" />
-      <Property Name="GameState" />
-      <Property Name="StateOwner" />
       <Property Name="TowerFactory" />
+      <Property Name="StateOwner" />
+      <Property Name="GameState" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Cells" />
@@ -74,9 +74,16 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameState" BaseTypeListCollapsed="true">
-    <Position X="2.25" Y="0.5" Width="1.75" />
+    <Position X="3.75" Y="2.25" Width="3.25" />
+    <NestedTypes>
+      <Struct Name="Core.GameState.Size" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameState.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAIAABIQAAAAQAAAIBIIIQgAgAABAAADAAAAAEIAABE=</HashCode>
+      <HashCode>AAIAARAQAAAAQggAIBIIIQgAgAABEAADAAAAAEIAQBE=</HashCode>
       <FileName>GameState.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -85,7 +92,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameStateOwner" BaseTypeListCollapsed="true">
-    <Position X="5" Y="1.75" Width="2.5" />
+    <Position X="9" Y="0.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAgIAAAAAAAAQAIAQAAAAAgAAAAAAAAAAAFAAAAAA=</HashCode>
       <FileName>GameStateOwner.cs</FileName>
@@ -94,20 +101,20 @@
       <Property Name="CurrentGameState" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
-      <Property Name="GameStates" />
       <Property Name="States" />
+      <Property Name="GameStates" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameStateSaver">
-    <Position X="13.5" Y="2.25" Width="1.5" />
+    <Position X="14.5" Y="8.5" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>GameStateSaver.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Core.TowerFactory">
-    <Position X="13.5" Y="4.5" Width="1.75" />
+    <Position X="9.75" Y="14.75" Width="2.25" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -129,7 +136,7 @@
     </TypeIdentifier>
   </Class>
   <Interface Name="Core.GameCells.ITower">
-    <Position X="1.25" Y="7" Width="1.5" />
+    <Position X="1.25" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABAAAAAAAAAAA=</HashCode>
       <FileName>GameCells\ITower.cs</FileName>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Input;
+
 using Core.GameCells;
 using static Core.TowerFactory;
 using Timer = System.Timers.Timer;
@@ -14,9 +14,55 @@ namespace Core
 {
     public sealed class GameEngineViewModel : INotifyPropertyChanged
     {
+        #region static
+
+        private static GameState GenerateGameState()
+        {
+            switch (new Random().Next(3))
+            {
+                case 0:
+                    return new GameState(
+                         new GameCell[]
+                         {
+                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell()
+                         },
+                         new GameState.Size { Height = 5, Width = 4 });
+                case 1:
+                    return new GameState(
+                         new GameCell[]
+                         {
+                            new RoadCell(),  new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new RoadCell(),  new RoadCell()
+                         },
+                         new GameState.Size { Height = 5, Width = 4 });
+                default:
+                    return new GameState(
+                        new GameCell[]
+                        {
+                            new TowerCell(), new RoadCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell()
+                        },
+                        new GameState.Size { Height = 5, Width = 3 });
+            }
+        }
+
+        #endregion
+
         #region fields
+
         private GameStateOwner _stateOwner;
         private TowerInfo _currentTowerType;
+
         #endregion
 
         #region properties
@@ -24,6 +70,7 @@ namespace Core
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region auto
+
         private object Locker { get; }
         private Timer Timer { get; }
         private GameStateSaver GameStateSaver { get; }
@@ -38,6 +85,7 @@ namespace Core
         public ICommand SaveToFileCommand { get; }
         public ICommand LoadFromFileCommand { get; }
         public ICommand SetTowerTypeCommand { get; }
+
         #endregion
 
         #region delegate
@@ -67,7 +115,7 @@ namespace Core
         public TowerInfo CurrentTowerType
         {
             get { return _currentTowerType; }
-            set
+            private set
             {
                 _currentTowerType = value;
                 OnPropertyChanged();
@@ -95,8 +143,8 @@ namespace Core
             Timer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
             Timer.Elapsed += (sender, args) =>
             {
-                if (NextTurnCanExecute())
-                    NextTurnExecute();
+                if (CanNextTurn())
+                    NextTurn();
                 else
                     Timer.Stop();
             };
@@ -111,19 +159,19 @@ namespace Core
 
             #region Commands
 
-            BuildTowerCommand = new ParameterisedDelegateCommand<GameCell>(BuildTowerExecute, BuildTowerCanExecute, this);
-            NextLevelCommand = new VoidDelegateCommand(NextLevelExecute, o => NextLevelCanExecute(), this);
-            SetTowerTypeCommand = new ParameterisedDelegateCommand<TowerInfo>(SetTowerTypeExecute, SetTowerTypeCanExecute, this);
+            BuildTowerCommand = new DelegateCommand<GameCell>(BuildTowerIn, CanBuildTowerIn, this);
+            NextLevelCommand = new DelegateCommand(NextLevel, o => CanNextLevel(), this);
+            SetTowerTypeCommand = new DelegateCommand<TowerInfo>(SetTowerTypeTo, CanSetTowerTypeTo, this);
 
             // menu commands
-            NewGameCommand = new VoidDelegateCommand(NewGame);
-            UndoTurnCommand = new ParameterisedDelegateCommand<int>(UndoGameExecute, UndoGameCanExecute, this);
+            NewGameCommand = new DelegateCommand(NewGame);
+            UndoTurnCommand = new DelegateCommand<int>(UndoGameFor, CanUndoGameFor, this);
 
             const string file = "test.xml";
             // todo : auto start from pause if enemies left ?
             // todo : select file 
-            SaveToFileCommand = new VoidDelegateCommand(() => SaveGameTo(file), o => EnemiesLeft == 0, this);
-            LoadFromFileCommand = new VoidDelegateCommand(() => LoadGameFrom(file));
+            SaveToFileCommand = new DelegateCommand(() => SaveGameTo(file), o => EnemiesLeft == 0, this);
+            LoadFromFileCommand = new DelegateCommand(() => LoadGameFrom(file));
 
             #endregion
 
@@ -147,36 +195,12 @@ namespace Core
         {
             Timer.Stop();
 
-            GameState gameState;
-            if (new Random().Next(2) == 0)
-                gameState = new GameState(
-                    new GameCell[]
-                    {
-                        new TowerCell(), new TowerCell(), new RoadCell(),   new TowerCell(),
-                        new TowerCell(), new RoadCell(),  new RoadCell(),   new TowerCell(),
-                        new TowerCell(), new RoadCell(),  new TowerCell(),  new TowerCell(),
-                        new TowerCell(), new RoadCell(),  new RoadCell(),   new TowerCell(),
-                        new TowerCell(), new TowerCell(), new RoadCell(),   new TowerCell()
-                    },
-                    new GameState.Size { Height = 5, Width = 4 });
-            else
-                gameState = new GameState(
-                    new GameCell[]
-                    {
-                       new TowerCell(), new RoadCell(),  new TowerCell(),
-                       new TowerCell(), new RoadCell(),  new TowerCell(),
-                       new TowerCell(), new RoadCell(),  new TowerCell(),
-                       new TowerCell(), new RoadCell(),  new TowerCell(),
-                       new TowerCell(), new RoadCell(),  new TowerCell()
-                    },
-                    new GameState.Size { Height = 5, Width = 3 });
-
-            StateOwner = new GameStateOwner(gameState);
+            StateOwner = new GameStateOwner(GenerateGameState());
             // ReSharper disable once ExplicitCallerInfoArgument
             GameState.PropertyChanged += (o, eventArgs) => OnPropertyChanged(eventArgs.PropertyName);
         }
 
-        private void NextTurnExecute()
+        private void NextTurn()
         {
             lock (Locker)
             {
@@ -193,35 +217,33 @@ namespace Core
             }
         }
 
-        private bool NextTurnCanExecute() => GameState.EnemiesLeft > 0 && GameState.Lives > 0;
+        private bool CanNextTurn() => GameState.EnemiesLeft > 0 && GameState.Lives > 0;
+        
+        // todo rework
+        private void BuildTowerIn(GameCell cell)
+            => GameState.BuildTowerIn(cell as TowerCell, CurrentTowerType.GetTower(), CurrentTowerType.Cost);
 
-        private void BuildTowerExecute(GameCell cell)
-        {
-            var towerCell = cell as TowerCell;
-            if (towerCell == null) return;
-            towerCell.Build(CurrentTowerType.GetTower());
-            GameState.Gold -= CurrentTowerType.Cost;
-        }
+        private bool CanBuildTowerIn(GameCell cell)
+            =>
+                CanSetTowerTypeTo(CurrentTowerType) &&
+                GameState.CanBuildTowerIn(cell as TowerCell, CurrentTowerType.GetTower(), CurrentTowerType.Cost);
 
-        private bool BuildTowerCanExecute(GameCell cell)
-            => GameState.Buildable(cell) && SetTowerTypeCanExecute(CurrentTowerType);
-
-        private void NextLevelExecute()
+        private void NextLevel()
         {
             StateOwner.Save();
             GameState.EnemiesLeft = ++GameState.Level * GameState.Cells.OfType<RoadCell>().Count();
             Timer.Start();
         }
 
-        private bool NextLevelCanExecute() => GameState.EnemiesLeft == 0 && GameState.Lives > 0;
+        private bool CanNextLevel() => GameState.EnemiesLeft == 0 && GameState.Lives > 0;
 
-        private void UndoGameExecute(int turns = 1)
+        private void UndoGameFor(int turns = 1)
         {
             for (; turns > 0; --turns)
                 StateOwner.Load();
         }
 
-        private bool UndoGameCanExecute(int turns = 1) => turns >= 1 && turns <= StateOwner.SavesCount;
+        private bool CanUndoGameFor(int turns = 1) => turns >= 1 && turns <= StateOwner.SavesCount;
 
         private void SaveGameTo(string file) => GameStateSaver.SaveTo(file, StateOwner.GameStates);
 
@@ -231,83 +253,76 @@ namespace Core
             StateOwner = new GameStateOwner(GameStateSaver.LoadFrom(file));
         }
 
-        private void SetTowerTypeExecute(TowerInfo towerType) => CurrentTowerType = towerType;
+        private void SetTowerTypeTo(TowerInfo towerType) => CurrentTowerType = towerType;
 
-        private bool SetTowerTypeCanExecute(TowerInfo towerType) => towerType != null && towerType.Cost <= Gold;
+        private bool CanSetTowerTypeTo(TowerInfo towerType) => towerType != null && towerType.Cost <= Gold;
 
         #endregion
 
         #endregion
 
         #region inner classes
-        // todo : change inner Action to Delegate
-        private abstract class DelegateCommand<T> : ICommand
+
+        private abstract class DelegateCommandBase<T> : ICommand
         {
-            #region properties 
+            #region properties
+
             public event EventHandler CanExecuteChanged;
 
             private Predicate<T> CanExecutePredicate { get; }
+            private Delegate ExecuteAction { get; }
+
             #endregion
 
             #region constructors
-            protected DelegateCommand(Predicate<T> canExecute, INotifyPropertyChanged notifier)
+
+            protected DelegateCommandBase(Delegate executeAction, Predicate<T> canExecutePredicate,
+                INotifyPropertyChanged notifier)
             {
-                CanExecutePredicate = canExecute;
+                if (executeAction == null)
+                    throw new ArgumentNullException(nameof(executeAction));
+                ExecuteAction = executeAction;
+
+                CanExecutePredicate = canExecutePredicate ?? (obj => true);
+
                 if (notifier == null) return;
+                // MultiThread
                 var currentContext = SynchronizationContext.Current;
                 notifier.PropertyChanged +=
                     (sender, args) =>
-                        currentContext.Post(state => ((DelegateCommand<T>)state).OnCanExecuteChanged(), this);
+                        currentContext.Post(state => ((DelegateCommandBase<T>)state).OnCanExecuteChanged(), this);
             }
+
             #endregion
 
-            #region methods
+            public bool CanExecute(object parameter)
+                => CanExecutePredicate?.Invoke((T)parameter) ?? true;
 
-            public bool CanExecute(object parameter) => CanExecutePredicate?.Invoke((T)parameter) ?? false;
-
-            public abstract void Execute(object parameter);
-
-            protected void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-
-            #endregion
-        }
-
-        private class VoidDelegateCommand : DelegateCommand<object>
-        {
-            private Action ExecuteAction { get; }
-
-            public VoidDelegateCommand(Action execute, Predicate<object> canExecute = null, INotifyPropertyChanged notifier = null)
-                : base(canExecute ?? (o => true), notifier)
-            {
-                ExecuteAction = execute;
-            }
-
-            public override void Execute(object parameter)
+            public void Execute(object parameter)
             {
                 if (!CanExecute(parameter)) return;
-                ExecuteAction?.Invoke();
+                ExecuteAction?.DynamicInvoke(parameter == null ? null : new[] { parameter });
                 OnCanExecuteChanged();
             }
+
+            private void OnCanExecuteChanged()
+                => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private class ParameterisedDelegateCommand<T> : DelegateCommand<T>
+        private sealed class DelegateCommand : DelegateCommandBase<object>
         {
-            private Action<T> ExecuteAction { get; }
-
-            public ParameterisedDelegateCommand(Action<T> execute, Predicate<T> canExecute, INotifyPropertyChanged notifier = null)
-                : base(canExecute, notifier)
-            {
-                ExecuteAction = execute;
-            }
-
-            public override void Execute(object parameter)
-            {
-                if (!CanExecute(parameter)) return;
-                ExecuteAction?.Invoke((T)parameter);
-                OnCanExecuteChanged();
-            }
+            public DelegateCommand(Action execute, Predicate<object> canExecute = null, INotifyPropertyChanged notifier = null)
+                : base(execute, canExecute, notifier)
+            { }
         }
+
+        private sealed class DelegateCommand<T> : DelegateCommandBase<T>
+        {
+            public DelegateCommand(Action<T> execute, Predicate<T> canExecute = null, INotifyPropertyChanged notifier = null)
+                : base(execute, canExecute, notifier)
+            { }
+        }
+
         #endregion
     }
 }
-//303

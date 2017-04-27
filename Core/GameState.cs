@@ -40,6 +40,8 @@ namespace Core
             get { return _score; }
             private set
             {
+                if (value < 0) // todo change to uint
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _score = value;
                 OnPropertyChanged();
             }
@@ -48,8 +50,10 @@ namespace Core
         public int Gold
         {
             get { return _gold; }
-            set
+            private set
             {
+                if (value < 0) // todo change to uint
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _gold = value;
                 OnPropertyChanged();
             }
@@ -58,8 +62,10 @@ namespace Core
         public int Level
         {
             get { return _level; }
-            set
+            set // todo to private
             {
+                if (value < 0)  // todo change to uint
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _level = value;
                 OnPropertyChanged();
             }
@@ -68,9 +74,9 @@ namespace Core
         public int EnemiesLeft
         {
             get { return _enemiesLeft; }
-            set
+            set// todo to private
             {
-                // todo extract to EnemiesDied method
+                // todo extract method
                 if (value < _enemiesLeft)
                 {
                     if (value < 0) value = 0;
@@ -90,7 +96,7 @@ namespace Core
         public int CurrentTurn
         {
             get { return _currentTurn; }
-            set
+            set // todo to private
             {
                 _currentTurn = value;
                 OnPropertyChanged();
@@ -100,7 +106,7 @@ namespace Core
         public int Lives
         {
             get { return _lives; }
-            set
+            set // todo to private
             {
                 _lives = value;
                 OnPropertyChanged();
@@ -133,7 +139,15 @@ namespace Core
 
         #region pure methods
 
-        public bool Buildable(GameCell cell) => Cells.Contains(cell) && ((cell as TowerCell)?.Buildable ?? false);
+        public void BuildTowerIn(TowerCell towerCell, ITower tower, int cost)
+        {
+            if (!CanBuildTowerIn(towerCell, tower, cost)) return;
+            towerCell.Build(tower.Clone() as ITower);
+            Gold -= cost;
+        }
+
+        public bool CanBuildTowerIn(TowerCell towerCell, ITower tower, int cost)
+            => Cells.Contains(towerCell) && (towerCell?.Buildable ?? false) && cost <= Gold;
 
         public GameState SetScoreTo(int score)
         {
@@ -171,6 +185,7 @@ namespace Core
             return this;
         }
 
+        #endregion
 
         public object Clone()
             =>
@@ -182,7 +197,6 @@ namespace Core
                     .SetCurrentTurnTo(CurrentTurn)
                     .SetLivesTo(Lives);
 
-        #endregion
 
         public struct Size
         {
@@ -191,4 +205,3 @@ namespace Core
         }
     }
 }
-// 192
