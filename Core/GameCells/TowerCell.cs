@@ -3,8 +3,9 @@ namespace Core.GameCells
     public sealed class TowerCell : GameCell
     {
         private ITower _tower;
+        private GameState _owner;
 
-        public bool Buildable => Tower == null || Tower.Power == 0; // todo create better check
+        public bool Buildable => Tower == null || Tower.AttackPower == 0; // todo create better check
 
         public ITower Tower
         {
@@ -13,7 +14,21 @@ namespace Core.GameCells
             {
                 _tower = value;
                 Name = _tower?.Name;
+                if (_tower != null)
+                    _tower.Owner = Owner;
                 OnPropertyChanged();
+            }
+        }
+
+        public GameState Owner
+        {
+            private get { return _owner; }
+            set
+            {
+                if (_owner != null) return;
+                _owner = value;
+                if (Tower == null || Tower?.Owner != null) return;
+                Tower.Owner = Owner;
             }
         }
 

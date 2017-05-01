@@ -6,6 +6,10 @@ namespace Core.GameCells
     {
         string Name { get; }
 
-        int Power { get; }
+        int AttackPower { get; }
+        
+        TimeSpan AttackSpeed { get; }
+
+        GameState Owner { get; set; }
     }
 }

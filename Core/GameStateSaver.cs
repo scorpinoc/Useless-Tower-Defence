@@ -27,7 +27,8 @@ namespace Core
                                             return new XElement(nameof(TowerCell),
                                                 new XElement(nameof(ITower),
                                                     new XAttribute(nameof(ITower.Name), tower?.Name ?? string.Empty),
-                                                    new XAttribute(nameof(ITower.Power), tower?.Power ?? 0)));
+                                                    new XAttribute(nameof(ITower.AttackPower), tower?.AttackPower ?? 0),
+                                                     new XAttribute(nameof(ITower.AttackSpeed), tower?.AttackSpeed ?? TimeSpan.MinValue)));
                                         }
                                     default:
                                         return null;
@@ -66,7 +67,8 @@ namespace Core
                                             return
                                                 new TowerCell(new Tower(
                                                     iTower.Attribute(nameof(ITower.Name))?.Value,
-                                                    Convert.ToInt32(iTower.Attribute(nameof(ITower.Power))?.Value)));
+                                                    Convert.ToInt32(iTower.Attribute(nameof(ITower.AttackPower))?.Value),
+                                                    TimeSpan.Parse(iTower.Attribute(nameof(ITower.AttackSpeed))?.Value)));
                                         }
                                     default:
                                         return null;

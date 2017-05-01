@@ -109,7 +109,8 @@
                         <Button.Content>
                             <StackPanel>
                                 <TextBlock TextAlignment="Center" Text="{Binding Path=Name}" />
-                                <TextBlock TextAlignment="Center" Text="{Binding Path=Power, StringFormat='{}Power: {0}'}" />
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=AttackPower, StringFormat='{}Power: {0}'}" />
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=AttackSpeed.TotalSeconds, StringFormat='{}Attack Speed: {0}'}" />
                                 <TextBlock TextAlignment="Center" Text="{Binding Path=Cost,  StringFormat='{}Cost: {0}'}" />
                             </StackPanel>
                         </Button.Content>
@@ -119,7 +120,8 @@
         </ItemsControl>
         <StatusBar>
             <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Name, StringFormat='{}Currently chosen: {0}'}" />
-            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Power, StringFormat='{}Power: {0}'}" />
+            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.AttackPower, StringFormat='{}Power: {0}'}" />
+            <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.AttackSpeed.TotalSeconds, StringFormat='{}Attack Speed: {0}'}" />
             <TextBlock Text="{Binding Source={StaticResource Engine}, Path=CurrentTowerType.Cost,  StringFormat='{}Cost: {0}'}" />
         </StatusBar>
     </StackPanel>

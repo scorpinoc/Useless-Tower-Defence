@@ -31,6 +31,8 @@ namespace Core
 
         public IEnumerable<GameCell> Cells { get; }
 
+        private int RoadSize { get; }
+
         #endregion
 
         #region delegate
@@ -62,7 +64,7 @@ namespace Core
         public int Level
         {
             get { return _level; }
-            set // todo to private
+            private set
             {
                 if (value < 0)  // todo change to uint
                     throw new ArgumentOutOfRangeException(nameof(value));
@@ -74,7 +76,7 @@ namespace Core
         public int EnemiesLeft
         {
             get { return _enemiesLeft; }
-            set// todo to private
+            set// todo to private and multithreading
             {
                 // todo extract method
                 if (value < _enemiesLeft)
@@ -126,6 +128,10 @@ namespace Core
             GridSize = gridSize;
             Gold = 100;
             Lives = 10;
+            RoadSize = (int)Cells.OfType<RoadCell>()?.Count();
+
+            foreach (var towerCell in Cells.OfType<TowerCell>())
+                towerCell.Owner = this;
         }
 
         #endregion
@@ -149,6 +155,15 @@ namespace Core
         public bool CanBuildTowerIn(TowerCell towerCell, ITower tower, int cost)
             => Cells.Contains(towerCell) && (towerCell?.Buildable ?? false) && cost <= Gold;
 
+        public void NextLevel()
+        {
+            if (!CanNextLevel()) return;
+            EnemiesLeft = ++Level * RoadSize;
+        }
+
+        public bool CanNextLevel() => EnemiesLeft == 0 && Lives > 0 && CurrentTurn == 0; // todo check adn rework CurrentTurn
+
+        // todo rework to builder-constructor
         public GameState SetScoreTo(int score)
         {
             Score = score;
@@ -196,7 +211,6 @@ namespace Core
                     .SetEnemiesTo(EnemiesLeft)
                     .SetCurrentTurnTo(CurrentTurn)
                     .SetLivesTo(Lives);
-
 
         public struct Size
         {

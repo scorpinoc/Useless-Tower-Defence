@@ -146,7 +146,10 @@ namespace Core
                 if (CanNextTurn())
                     NextTurn();
                 else
+                {
                     Timer.Stop();
+                    GameState.CurrentTurn = 0; // todo check and rework
+                }
             };
             GameStateSaver = new GameStateSaver();
             TowerFactory = new TowerFactory();
@@ -160,7 +163,7 @@ namespace Core
             #region Commands
 
             BuildTowerCommand = new DelegateCommand<GameCell>(BuildTowerIn, CanBuildTowerIn, this);
-            NextLevelCommand = new DelegateCommand(NextLevel, o => CanNextLevel(), this);
+            NextLevelCommand = new DelegateCommand(NextLevel, o => GameState.CanNextLevel(), this);
             SetTowerTypeCommand = new DelegateCommand<TowerInfo>(SetTowerTypeTo, CanSetTowerTypeTo, this);
 
             // menu commands
@@ -204,21 +207,15 @@ namespace Core
         {
             lock (Locker)
             {
-                GameState.EnemiesLeft -= GameState.Cells.OfType<TowerCell>().Sum(cell => cell.Tower?.Power ?? 0);
-                if (GameState.EnemiesLeft != 0)
-                {
-                    if (++GameState.CurrentTurn <= 10) return;
-                    --GameState.EnemiesLeft;
-                    --GameState.Lives;
-                    if (GameState.EnemiesLeft > 0 && GameState.Lives > 0)
-                        return;
-                }
-                GameState.CurrentTurn = 0;
+                if (GameState.EnemiesLeft == 0) return;
+                if (++GameState.CurrentTurn <= 10) return;
+                --GameState.EnemiesLeft;
+                --GameState.Lives;
             }
         }
 
         private bool CanNextTurn() => GameState.EnemiesLeft > 0 && GameState.Lives > 0;
-        
+
         // todo rework
         private void BuildTowerIn(GameCell cell)
             => GameState.BuildTowerIn(cell as TowerCell, CurrentTowerType.GetTower(), CurrentTowerType.Cost);
@@ -231,11 +228,9 @@ namespace Core
         private void NextLevel()
         {
             StateOwner.Save();
-            GameState.EnemiesLeft = ++GameState.Level * GameState.Cells.OfType<RoadCell>().Count();
+            GameState.NextLevel();
             Timer.Start();
         }
-
-        private bool CanNextLevel() => GameState.EnemiesLeft == 0 && GameState.Lives > 0;
 
         private void UndoGameFor(int turns = 1)
         {

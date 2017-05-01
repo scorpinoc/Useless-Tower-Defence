@@ -32,7 +32,7 @@ namespace Core
 
         public void Save()
         {
-            States.Push((GameState)States.Peek().Clone());
+            States.Push((GameState)CurrentGameState.Clone());
             OnPropertyChanged(null);
         }
 
