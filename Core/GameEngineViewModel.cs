@@ -209,7 +209,7 @@ namespace Core
             {
                 if (GameState.EnemiesLeft == 0) return;
                 if (++GameState.CurrentTurn <= 10) return;
-                --GameState.EnemiesLeft;
+                GameState.Attack(1);
                 --GameState.Lives;
             }
         }
@@ -264,8 +264,8 @@ namespace Core
 
             public event EventHandler CanExecuteChanged;
 
-            private Predicate<T> CanExecutePredicate { get; }
-            private Delegate ExecuteAction { get; }
+            private Predicate<T> CanExecutePredicate { get; }   // todo rework to delegate
+            protected Delegate ExecuteAction { get; }
 
             #endregion
 
@@ -291,14 +291,16 @@ namespace Core
             #endregion
 
             public bool CanExecute(object parameter)
-                => CanExecutePredicate?.Invoke((T)parameter) ?? true;
+                => CanExecutePredicate?.Invoke((T)parameter) ?? true;   // todo to abstract method
 
             public void Execute(object parameter)
             {
                 if (!CanExecute(parameter)) return;
-                ExecuteAction?.DynamicInvoke(parameter == null ? null : new[] { parameter });
+                ExecuteImplementation(parameter);
                 OnCanExecuteChanged();
             }
+
+            protected virtual void ExecuteImplementation(object parameter) => ExecuteAction?.DynamicInvoke(parameter);
 
             private void OnCanExecuteChanged()
                 => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
@@ -309,6 +311,8 @@ namespace Core
             public DelegateCommand(Action execute, Predicate<object> canExecute = null, INotifyPropertyChanged notifier = null)
                 : base(execute, canExecute, notifier)
             { }
+
+            protected override void ExecuteImplementation(object parameter) => ExecuteAction?.DynamicInvoke();
         }
 
         private sealed class DelegateCommand<T> : DelegateCommandBase<T>

@@ -76,21 +76,11 @@ namespace Core
         public int EnemiesLeft
         {
             get { return _enemiesLeft; }
-            set// todo to private and multithreading
+            private set
             {
-                // todo extract method
-                if (value < _enemiesLeft)
-                {
-                    if (value < 0) value = 0;
-                    var killed = _enemiesLeft - value;
-                    Gold += killed * Level;
-
-                    _enemiesLeft = value;
-
-                    Score += Math.Max(killed * Level + Gold / 100 - Math.Max(_enemiesLeft * CurrentTurn / 2, 0), killed);
-                }
-                else
-                    _enemiesLeft = value;
+                if (value < 0)  // todo change to uint
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _enemiesLeft = value;
                 OnPropertyChanged();
             }
         }
@@ -161,7 +151,17 @@ namespace Core
             EnemiesLeft = ++Level * RoadSize;
         }
 
-        public bool CanNextLevel() => EnemiesLeft == 0 && Lives > 0 && CurrentTurn == 0; // todo check adn rework CurrentTurn
+        public bool CanNextLevel() => EnemiesLeft == 0 && Lives > 0 && CurrentTurn == 0; // todo check and rework CurrentTurn
+
+        public void Attack(int damage)
+        {
+            if (EnemiesLeft <= 0) return; // todo change to uint
+            if (damage > EnemiesLeft)
+                damage = EnemiesLeft;
+            EnemiesLeft -= damage > EnemiesLeft ? EnemiesLeft : damage;
+            Gold += damage * Level;
+            Score += Math.Max(damage * Level + Gold / 100 - Math.Max(EnemiesLeft * CurrentTurn / 2, 0), damage);
+        }
 
         // todo rework to builder-constructor
         public GameState SetScoreTo(int score)
@@ -202,7 +202,7 @@ namespace Core
 
         #endregion
 
-        public object Clone()
+        public object Clone()   // todo rework to constructor
             =>
                 new GameState(new ObservableCollection<GameCell>(Cells.Select(cell => (GameCell)cell.Clone())), GridSize)
                     .SetScoreTo(Score)
@@ -219,3 +219,4 @@ namespace Core
         }
     }
 }
+// todo 222

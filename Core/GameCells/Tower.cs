@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
 namespace Core.GameCells
@@ -7,7 +9,7 @@ namespace Core.GameCells
     {
         private GameState _owner;
 
-        private Timer Timer { get; }
+        private Task AttackWaiter { get; set; }
 
         public string Name { get; }
 
@@ -22,36 +24,32 @@ namespace Core.GameCells
             {
                 _owner = value;
                 if (_owner == null) return;
-                InitializeAttack();
+                _owner.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(_owner.EnemiesLeft))
+                        Attack();
+                };
             }
         }
-        
+
         public Tower(string name, int attackPower, TimeSpan attackSpeed)
         {
             Name = name;
             AttackPower = attackPower;
             AttackSpeed = attackSpeed;
-            Timer = new Timer(attackSpeed.TotalMilliseconds);
         }
-
-        private void InitializeAttack()
+        
+        private async void Attack()
         {
-            // todo rework from timer to sleep-reset
-            Owner.PropertyChanged += (sender, args) =>
+            while (Owner.EnemiesLeft > 0 && AttackWaiter == null)
             {
-                if (args.PropertyName == nameof(Owner.EnemiesLeft))
-                    Timer.Start();
-            };
-            // todo lock thread (or in GameState)
-            Timer.Elapsed += (sender, args) =>
-            {
-                if (Owner.EnemiesLeft > 0)
-                    Owner.EnemiesLeft -= AttackPower;
-                else
-                    Timer.Stop();
-            };
+                await (AttackWaiter = Task.Run(() => Thread.Sleep(AttackSpeed)));
+                Owner.Attack(AttackPower);
+                AttackWaiter = null;
+            }
         }
 
         public object Clone() => new Tower(Name, AttackPower, AttackSpeed);
     }
 }
+// todo 58
