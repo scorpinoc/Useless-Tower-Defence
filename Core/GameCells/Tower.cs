@@ -1,21 +1,20 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Timer = System.Timers.Timer;
 
 namespace Core.GameCells
 {
     public class Tower : ITower
     {
         private GameState _owner;
-
-        private Task AttackWaiter { get; set; }
-
+        
         public string Name { get; }
 
         public int AttackPower { get; }
 
         public TimeSpan AttackSpeed { get; }
+        
+        private SemaphoreSlim SemaphoreSlim { get; } 
 
         public GameState Owner
         {
@@ -37,19 +36,20 @@ namespace Core.GameCells
             Name = name;
             AttackPower = attackPower;
             AttackSpeed = attackSpeed;
+            SemaphoreSlim = new SemaphoreSlim(1,1);
         }
-        
+
         private async void Attack()
         {
-            while (Owner.EnemiesLeft > 0 && AttackWaiter == null)
+            await SemaphoreSlim.WaitAsync();
+            while (Owner.CanAttack())
             {
-                await (AttackWaiter = Task.Run(() => Thread.Sleep(AttackSpeed)));
                 Owner.Attack(AttackPower);
-                AttackWaiter = null;
+                await Task.Delay(AttackSpeed);
             }
+            SemaphoreSlim.Release();
         }
 
         public object Clone() => new Tower(Name, AttackPower, AttackSpeed);
     }
 }
-// todo 58

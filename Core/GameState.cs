@@ -16,6 +16,7 @@ namespace Core
         private int _gold;
         private int _level;
         private int _enemiesLeft;
+        private int _enemiesHealth;
         private int _currentTurn;
         private int _lives;
 
@@ -27,8 +28,9 @@ namespace Core
 
         #region auto
 
-        public Size GridSize { get; }
+        private object Locker { get; }
 
+        public Size GridSize { get; }
         public IEnumerable<GameCell> Cells { get; }
 
         private int RoadSize { get; }
@@ -73,6 +75,7 @@ namespace Core
             }
         }
 
+        // todo to objects Enemies
         public int EnemiesLeft
         {
             get { return _enemiesLeft; }
@@ -84,6 +87,20 @@ namespace Core
                 OnPropertyChanged();
             }
         }
+
+        public int EnemiesHealth
+        {
+            get { return _enemiesHealth; }
+            private set
+            {
+                if (value < 0)  // todo change to uint
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _enemiesHealth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int LastEnemieHealth { get; set; }
 
         public int CurrentTurn
         {
@@ -120,6 +137,8 @@ namespace Core
             Lives = 10;
             RoadSize = (int)Cells.OfType<RoadCell>()?.Count();
 
+            Locker = new object();
+
             foreach (var towerCell in Cells.OfType<TowerCell>())
                 towerCell.Owner = this;
         }
@@ -148,20 +167,43 @@ namespace Core
         public void NextLevel()
         {
             if (!CanNextLevel()) return;
-            EnemiesLeft = ++Level * RoadSize;
+            ++Level;
+            EnemiesHealth = (Level + 1) / 2;
+            LastEnemieHealth = EnemiesHealth;
+            EnemiesLeft = Level * RoadSize;
         }
 
         public bool CanNextLevel() => EnemiesLeft == 0 && Lives > 0 && CurrentTurn == 0; // todo check and rework CurrentTurn
 
         public void Attack(int damage)
         {
-            if (EnemiesLeft <= 0) return; // todo change to uint
-            if (damage > EnemiesLeft)
-                damage = EnemiesLeft;
-            EnemiesLeft -= damage > EnemiesLeft ? EnemiesLeft : damage;
-            Gold += damage * Level;
-            Score += Math.Max(damage * Level + Gold / 100 - Math.Max(EnemiesLeft * CurrentTurn / 2, 0), damage);
+            lock (Locker)
+            {
+                if (!CanAttack()) return; // todo rewok?
+                var enemies = EnemiesLeft;
+                if (LastEnemieHealth > 0)
+                {
+                    LastEnemieHealth -= damage;
+                    if (LastEnemieHealth <= 0)
+                    {
+                        LastEnemieHealth = EnemiesHealth;
+                        --EnemiesLeft;
+                    }
+                }
+                else
+                {
+                    if (EnemiesHealth > damage)
+                        LastEnemieHealth = EnemiesHealth - damage;
+                    else
+                        --EnemiesLeft;
+                }
+                if (enemies == EnemiesLeft) return; // todo rework for enemies objects
+                Gold += Level;
+                Score += Math.Max(Level + Gold / 100 - CurrentTurn / 2, 1);
+            }
         }
+
+        public bool CanAttack() => EnemiesLeft > 0 && Lives > 0;
 
         // todo rework to builder-constructor
         public GameState SetScoreTo(int score)
@@ -188,6 +230,12 @@ namespace Core
             return this;
         }
 
+        public GameState SetEnemiesHealthTo(int health)
+        {
+            EnemiesHealth = health;
+            return this;
+        }
+
         public GameState SetCurrentTurnTo(int turn)
         {
             CurrentTurn = turn;
@@ -209,6 +257,7 @@ namespace Core
                     .SetGoldTo(Gold)
                     .SetLevelTo(Level)
                     .SetEnemiesTo(EnemiesLeft)
+                    .SetEnemiesHealthTo(EnemiesHealth)
                     .SetCurrentTurnTo(CurrentTurn)
                     .SetLivesTo(Lives);
 
@@ -219,4 +268,3 @@ namespace Core
         }
     }
 }
-// todo 222

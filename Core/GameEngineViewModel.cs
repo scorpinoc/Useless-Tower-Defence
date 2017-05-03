@@ -129,6 +129,7 @@ namespace Core
         public int Gold => GameState.Gold;
         public int Level => GameState.Level;
         public int EnemiesLeft => GameState.EnemiesLeft;
+        public int EnemiesHealth => GameState.EnemiesHealth;
         public int CurrentTurn => GameState.CurrentTurn;
         public int Lives => GameState.Lives;
         #endregion
@@ -209,7 +210,7 @@ namespace Core
             {
                 if (GameState.EnemiesLeft == 0) return;
                 if (++GameState.CurrentTurn <= 10) return;
-                GameState.Attack(1);
+                GameState.Attack(GameState.EnemiesHealth); // todo rework
                 --GameState.Lives;
             }
         }
