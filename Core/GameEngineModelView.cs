@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Input;
 
 using Core.GameCells;
+using static Core.DelegateCommand;
 using static Core.TowerFactory;
 using Timer = System.Timers.Timer;
 
 namespace Core
 {
-    public sealed class GameEngineViewModel : INotifyPropertyChanged
+    public sealed class GameEngineModelView : INotifyPropertyChanged
     {
         #region static
 
@@ -138,7 +138,7 @@ namespace Core
 
         #region constructors
 
-        public GameEngineViewModel()
+        public GameEngineModelView()
         {
             Locker = new object();
             Timer = new Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
@@ -163,19 +163,19 @@ namespace Core
 
             #region Commands
 
-            BuildTowerCommand = new DelegateCommand<GameCell>(BuildTowerIn, CanBuildTowerIn, this);
-            NextLevelCommand = new DelegateCommand(NextLevel, o => GameState.CanNextLevel(), this);
-            SetTowerTypeCommand = new DelegateCommand<TowerInfo>(SetTowerTypeTo, CanSetTowerTypeTo, this);
+            BuildTowerCommand = CreateCommand<GameCell>(BuildTowerIn, CanBuildTowerIn, this);
+            NextLevelCommand = CreateCommand(NextLevel, GameState.CanNextLevel, this);
+            SetTowerTypeCommand = CreateCommand<TowerInfo>(SetTowerTypeTo, CanSetTowerTypeTo, this);
 
             // menu commands
-            NewGameCommand = new DelegateCommand(NewGame);
-            UndoTurnCommand = new DelegateCommand<int>(UndoGameFor, CanUndoGameFor, this);
+            NewGameCommand = CreateCommand(NewGame);
+            UndoTurnCommand = CreateCommand<int>(UndoGameFor, CanUndoGameFor, this);
 
             const string file = "test.xml";
             // todo : auto start from pause if enemies left ?
             // todo : select file 
-            SaveToFileCommand = new DelegateCommand(() => SaveGameTo(file), o => EnemiesLeft == 0, this);
-            LoadFromFileCommand = new DelegateCommand(() => LoadGameFrom(file));
+            SaveToFileCommand = CreateCommand(() => SaveGameTo(file), () => EnemiesLeft == 0, this);
+            LoadFromFileCommand = CreateCommand(() => LoadGameFrom(file));
 
             #endregion
 
@@ -254,74 +254,6 @@ namespace Core
         private bool CanSetTowerTypeTo(TowerInfo towerType) => towerType != null && towerType.Cost <= Gold;
 
         #endregion
-
-        #endregion
-
-        #region inner classes
-
-        private abstract class DelegateCommandBase<T> : ICommand
-        {
-            #region properties
-
-            public event EventHandler CanExecuteChanged;
-
-            private Predicate<T> CanExecutePredicate { get; }   // todo rework to delegate
-            protected Delegate ExecuteAction { get; }
-
-            #endregion
-
-            #region constructors
-
-            protected DelegateCommandBase(Delegate executeAction, Predicate<T> canExecutePredicate,
-                INotifyPropertyChanged notifier)
-            {
-                if (executeAction == null)
-                    throw new ArgumentNullException(nameof(executeAction));
-                ExecuteAction = executeAction;
-
-                CanExecutePredicate = canExecutePredicate ?? (obj => true);
-
-                if (notifier == null) return;
-                // MultiThread
-                var currentContext = SynchronizationContext.Current;
-                notifier.PropertyChanged +=
-                    (sender, args) =>
-                        currentContext.Post(state => ((DelegateCommandBase<T>)state).OnCanExecuteChanged(), this);
-            }
-
-            #endregion
-
-            public bool CanExecute(object parameter)
-                => CanExecutePredicate?.Invoke((T)parameter) ?? true;   // todo to abstract method
-
-            public void Execute(object parameter)
-            {
-                if (!CanExecute(parameter)) return;
-                ExecuteImplementation(parameter);
-                OnCanExecuteChanged();
-            }
-
-            protected virtual void ExecuteImplementation(object parameter) => ExecuteAction?.DynamicInvoke(parameter);
-
-            private void OnCanExecuteChanged()
-                => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private sealed class DelegateCommand : DelegateCommandBase<object>
-        {
-            public DelegateCommand(Action execute, Predicate<object> canExecute = null, INotifyPropertyChanged notifier = null)
-                : base(execute, canExecute, notifier)
-            { }
-
-            protected override void ExecuteImplementation(object parameter) => ExecuteAction?.DynamicInvoke();
-        }
-
-        private sealed class DelegateCommand<T> : DelegateCommandBase<T>
-        {
-            public DelegateCommand(Action<T> execute, Predicate<T> canExecute = null, INotifyPropertyChanged notifier = null)
-                : base(execute, canExecute, notifier)
-            { }
-        }
 
         #endregion
     }

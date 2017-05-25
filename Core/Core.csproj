@@ -40,12 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DelegateCommand.cs" />
     <Compile Include="GameCells\GameCell.cs" />
     <Compile Include="GameCells\ITower.cs" />
     <Compile Include="GameCells\RoadCell.cs" />
     <Compile Include="GameCells\Tower.cs" />
     <Compile Include="GameCells\TowerCell.cs" />
-    <Compile Include="GameEngineViewModel.cs" />
+    <Compile Include="GameEngineModelView.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="GameStateOwner.cs" />
     <Compile Include="GameStateSaver.cs" />

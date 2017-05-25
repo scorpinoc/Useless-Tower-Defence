@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <core:GameEngineViewModel x:Key="Engine" />
+        <core:GameEngineModelView x:Key="Engine" />
     </Window.Resources>
     <StackPanel>
         <Menu>
