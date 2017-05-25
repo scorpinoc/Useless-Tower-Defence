@@ -68,7 +68,8 @@ namespace Core
                                                 new TowerCell(new Tower(
                                                     iTower.Attribute(nameof(ITower.Name))?.Value,
                                                     Convert.ToInt32(iTower.Attribute(nameof(ITower.AttackPower))?.Value),
-                                                    TimeSpan.Parse(iTower.Attribute(nameof(ITower.AttackSpeed))?.Value)));
+                                                    TimeSpan.Parse(iTower.Attribute(nameof(ITower.AttackSpeed))?.Value),
+                                                    0 /*todo save-load cost on need*/));
                                         }
                                     default:
                                         return null;

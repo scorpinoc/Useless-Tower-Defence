@@ -7,7 +7,6 @@ using System.Windows.Input;
 
 using Core.GameCells;
 using static Core.DelegateCommand;
-using static Core.TowerFactory;
 using Timer = System.Timers.Timer;
 
 namespace Core
@@ -61,7 +60,7 @@ namespace Core
         #region fields
 
         private GameStateOwner _stateOwner;
-        private TowerInfo _currentTowerType;
+        private ITower _currentTowerType;
 
         #endregion
 
@@ -74,9 +73,8 @@ namespace Core
         private object Locker { get; }
         private Timer Timer { get; }
         private GameStateSaver GameStateSaver { get; }
-        private TowerFactory TowerFactory { get; }
 
-        public IEnumerable<TowerInfo> TowerTypes { get; }
+        public IEnumerable<ITower> TowerTypes { get; }
 
         public ICommand NewGameCommand { get; }
         public ICommand BuildTowerCommand { get; }
@@ -112,7 +110,7 @@ namespace Core
 
         private GameState GameState => StateOwner.CurrentGameState;
 
-        public TowerInfo CurrentTowerType
+        public ITower CurrentTowerType
         {
             get { return _currentTowerType; }
             private set
@@ -153,19 +151,20 @@ namespace Core
                 }
             };
             GameStateSaver = new GameStateSaver();
-            TowerFactory = new TowerFactory();
             // todo check for skip TowerType.Empty
             TowerTypes =
                 Enum.GetValues(typeof(TowerType))
                     .Cast<TowerType>()
                     .Skip(1)
-                    .Select(type => TowerFactory.GeTowerInfoFor(type));
+                    .Select(type => type.CreateTower());
+
+            NewGame();
 
             #region Commands
 
             BuildTowerCommand = CreateCommand<GameCell>(BuildTowerIn, CanBuildTowerIn, this);
-            NextLevelCommand = CreateCommand(NextLevel, GameState.CanNextLevel, this);
-            SetTowerTypeCommand = CreateCommand<TowerInfo>(SetTowerTypeTo, CanSetTowerTypeTo, this);
+            NextLevelCommand = CreateCommand(NextLevel, () => GameState.CanNextLevel(), this);
+            SetTowerTypeCommand = CreateCommand<ITower>(SetTowerTypeTo, CanSetTowerTypeTo, this);
 
             // menu commands
             NewGameCommand = CreateCommand(NewGame);
@@ -178,8 +177,6 @@ namespace Core
             LoadFromFileCommand = CreateCommand(() => LoadGameFrom(file));
 
             #endregion
-
-            NewGame();
         }
 
         #endregion
@@ -219,12 +216,12 @@ namespace Core
 
         // todo rework
         private void BuildTowerIn(GameCell cell)
-            => GameState.BuildTowerIn(cell as TowerCell, CurrentTowerType.GetTower(), CurrentTowerType.Cost);
+            => GameState.BuildTowerIn(cell as TowerCell, (ITower)CurrentTowerType.Clone(), CurrentTowerType.Cost);
 
         private bool CanBuildTowerIn(GameCell cell)
             =>
                 CanSetTowerTypeTo(CurrentTowerType) &&
-                GameState.CanBuildTowerIn(cell as TowerCell, CurrentTowerType.GetTower(), CurrentTowerType.Cost);
+                GameState.CanBuildTowerIn(cell as TowerCell, CurrentTowerType, CurrentTowerType.Cost);
 
         private void NextLevel()
         {
@@ -249,9 +246,9 @@ namespace Core
             StateOwner = new GameStateOwner(GameStateSaver.LoadFrom(file));
         }
 
-        private void SetTowerTypeTo(TowerInfo towerType) => CurrentTowerType = towerType;
+        private void SetTowerTypeTo(ITower towerType) => CurrentTowerType = towerType;
 
-        private bool CanSetTowerTypeTo(TowerInfo towerType) => towerType != null && towerType.Cost <= Gold;
+        private bool CanSetTowerTypeTo(ITower towerType) => towerType != null && towerType.Cost <= Gold;
 
         #endregion
 

@@ -13,7 +13,9 @@ namespace Core.GameCells
         public int AttackPower { get; }
 
         public TimeSpan AttackSpeed { get; }
-        
+
+        public int Cost { get; }
+
         private SemaphoreSlim SemaphoreSlim { get; } 
 
         public GameState Owner
@@ -31,11 +33,12 @@ namespace Core.GameCells
             }
         }
 
-        public Tower(string name, int attackPower, TimeSpan attackSpeed)
+        public Tower(string name, int attackPower, TimeSpan attackSpeed, int cost)
         {
             Name = name;
             AttackPower = attackPower;
             AttackSpeed = attackSpeed;
+            Cost = cost;
             SemaphoreSlim = new SemaphoreSlim(1,1);
         }
 
@@ -50,6 +53,6 @@ namespace Core.GameCells
             SemaphoreSlim.Release();
         }
 
-        public object Clone() => new Tower(Name, AttackPower, AttackSpeed);
+        public object Clone() => new Tower(Name, AttackPower, AttackSpeed, Cost);
     }
 }

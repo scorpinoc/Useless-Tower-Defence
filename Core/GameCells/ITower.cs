@@ -10,6 +10,8 @@ namespace Core.GameCells
         
         TimeSpan AttackSpeed { get; }
 
+        int Cost { get; }
+
         GameState Owner { get; set; }
     }
 }
