@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Core.GameEngineModelView">
+    <Position X="7.25" Y="3" Width="3.5" />
+    <NestedTypes>
+      <Class Name="Core.GameEngineModelView.GameStateGenerator">
+        <TypeIdentifier>
+          <NewMemberFileName>GameEngineModelView.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AUEBAQAsICAAAAgAKQKwBAiAhABQEgCDBIIAAEIEIAE=</HashCode>
+      <FileName>GameEngineModelView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_currentTowerType" />
+      <Field Name="_stateOwner" />
+      <Property Name="CurrentTowerType" />
+      <Property Name="GameStateSaver" />
+      <Property Name="StateOwner" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Cells" />
+      <Property Name="TowerTypes" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Core.GameStateOwner" Collapsed="true">
+    <Position X="8.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIAAAAAAAAQAIAQAAAAAgAAAAAAAAAAAFAAAAAA=</HashCode>
+      <FileName>GameStateOwner.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Core.GameCells.GameCell" Collapsed="true">
+    <Position X="5.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAIAAAAAQAgAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>GameCells\GameCell.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Core.GameState" Collapsed="true">
+    <Position X="11.75" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="Core.GameState.Size" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GameState.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAARA0AAAEQgwAIBIoIQgAgIABEAADEAAAAEIAQBE=</HashCode>
+      <FileName>GameState.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Core.GameStateSaver" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>GameStateSaver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Core.GameCells.ITower" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAACBQAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>GameCells\ITower.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Core.IGameStateView" Collapsed="true">
+    <Position X="1.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAIgAAgAAAAAAAADAAAAAEIAAAE=</HashCode>
+      <FileName>IGameStateView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

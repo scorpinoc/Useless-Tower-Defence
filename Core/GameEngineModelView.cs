@@ -11,52 +11,9 @@ using Timer = System.Timers.Timer;
 
 namespace Core
 {
-    public sealed class GameEngineModelView : INotifyPropertyChanged
+
+    public sealed class GameEngineModelView : IGameStateView
     {
-        #region static
-
-        private static GameState GenerateGameState()
-        {
-            switch (new Random().Next(3))
-            {
-                case 0:
-                    return new GameState(
-                         new GameCell[]
-                         {
-                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell(),
-                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
-                            new TowerCell(), new RoadCell(),  new TowerCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
-                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell()
-                         },
-                         new GameState.Size { Height = 5, Width = 4 });
-                case 1:
-                    return new GameState(
-                         new GameCell[]
-                         {
-                            new RoadCell(),  new RoadCell(), new TowerCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new RoadCell(),  new RoadCell()
-                         },
-                         new GameState.Size { Height = 5, Width = 4 });
-                default:
-                    return new GameState(
-                        new GameCell[]
-                        {
-                            new TowerCell(), new RoadCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell(),
-                            new TowerCell(), new RoadCell(), new TowerCell()
-                        },
-                        new GameState.Size { Height = 5, Width = 3 });
-            }
-        }
-
-        #endregion
-
         #region fields
 
         private GameStateOwner _stateOwner;
@@ -87,6 +44,7 @@ namespace Core
         #endregion
 
         #region delegate
+
         private GameStateOwner StateOwner
         {
             get { return _stateOwner; }
@@ -130,6 +88,7 @@ namespace Core
         public int EnemiesHealth => GameState.EnemiesHealth;
         public int CurrentTurn => GameState.CurrentTurn;
         public int Lives => GameState.Lives;
+
         #endregion
 
         #endregion
@@ -196,7 +155,7 @@ namespace Core
         {
             Timer.Stop();
 
-            StateOwner = new GameStateOwner(GenerateGameState());
+            StateOwner = new GameStateOwner(GameStateGenerator.GenerateGameState());
             // ReSharper disable once ExplicitCallerInfoArgument
             GameState.PropertyChanged += (o, eventArgs) => OnPropertyChanged(eventArgs.PropertyName);
         }
@@ -214,10 +173,11 @@ namespace Core
 
         private bool CanNextTurn() => GameState.EnemiesLeft > 0 && GameState.Lives > 0;
 
-        // todo rework
+        // todo rework to delete TowerCell
         private void BuildTowerIn(GameCell cell)
             => GameState.BuildTowerIn(cell as TowerCell, (ITower)CurrentTowerType.Clone(), CurrentTowerType.Cost);
 
+        // todo rework to delete TowerCell
         private bool CanBuildTowerIn(GameCell cell)
             =>
                 CanSetTowerTypeTo(CurrentTowerType) &&
@@ -253,5 +213,53 @@ namespace Core
         #endregion
 
         #endregion
+
+        private static class GameStateGenerator
+        {
+            public static GameState GenerateGameState()
+            {
+                switch (new Random().Next(3))
+                {
+                    case 0:
+                        return new GameState(
+                            new GameCell[]
+                            {
+                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(),  new RoadCell(),  new TowerCell(),
+                            new TowerCell(), new TowerCell(), new RoadCell(),  new TowerCell()
+                            },
+                            new GameState.Size { Height = 5, Width = 4 });
+                    case 1:
+                        return new GameState(
+                            new GameCell[]
+                            {
+                            new RoadCell(),  new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new TowerCell(), new TowerCell(),
+                            new TowerCell(), new RoadCell(), new RoadCell(),  new RoadCell()
+                            },
+                            new GameState.Size { Height = 5, Width = 4 });
+                    default:
+                        return GameState_SimpleLineRoad();
+                }
+            }
+
+            private static GameState GameState_SimpleLineRoad()
+            {
+                return new GameState(
+                    new GameCell[]
+                    {
+                        new TowerCell(), new RoadCell(), new TowerCell(),
+                        new TowerCell(), new RoadCell(), new TowerCell(),
+                        new TowerCell(), new RoadCell(), new TowerCell(),
+                        new TowerCell(), new RoadCell(), new TowerCell(),
+                        new TowerCell(), new RoadCell(), new TowerCell()
+                    },
+                    new GameState.Size { Height = 5, Width = 3 });
+            }
+        }
     }
 }

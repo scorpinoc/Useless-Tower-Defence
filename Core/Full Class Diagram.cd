@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
-  <Class Name="Core.GameCells.GameCell" Collapsed="true">
-    <Position X="5.5" Y="8.75" Width="1.5" />
+  <Class Name="Core.GameCells.GameCell">
+    <Position X="14" Y="0.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAAAIAAAAAQAgAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\GameCell.cs</FileName>
@@ -9,72 +9,68 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameCells.RoadCell">
-    <Position X="7" Y="10" Width="1.5" />
+    <Position X="9" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\RoadCell.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Core.GameCells.Tower" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="3" Width="1.5" />
+    <Position X="17.5" Y="7" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABAAAAAAAAABA=</HashCode>
+      <HashCode>AAAAgACAAAAAAAAAAAAACBQAAIAAAAIAAAAAAAAQABA=</HashCode>
       <FileName>GameCells\Tower.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_owner" />
+      <Property Name="Owner" />
+    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Core.GameCells.TowerCell">
-    <Position X="4" Y="10" Width="1.5" />
+    <Position X="9" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAIAEAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAAAgAKAEAAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAABA=</HashCode>
       <FileName>GameCells\TowerCell.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_tower" />
+      <Field Name="_owner" />
       <Property Name="Tower" />
+      <Property Name="Owner" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Core.GameEngineViewModel" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="4.25" Width="3.25" />
+  <Class Name="Core.GameEngineModelView" BaseTypeListCollapsed="true">
+    <Position X="5" Y="3" Width="3.25" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="Core.GameEngineViewModel.DelegateCommandBase&lt;T&gt;" Collapsed="true">
+      <Class Name="Core.GameEngineModelView.GameStateGenerator" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Class>
-      <Class Name="Core.GameEngineViewModel.DelegateCommand" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="Core.GameEngineViewModel.DelegateCommand&lt;T&gt;" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>GameEngineViewModel.cs</NewMemberFileName>
+          <NewMemberFileName>GameEngineModelView.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AUEBAwAsICAAAAwAKQKQBAiAhABQEgCDBIIAAEIUIAE=</HashCode>
-      <FileName>GameEngineViewModel.cs</FileName>
+      <HashCode>AUEBAQAsICAAAAgAKQKwBAiAhABQEgCDBIIAAEIEIAE=</HashCode>
+      <FileName>GameEngineModelView.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_stateOwner" />
+      <Field Name="_currentTowerType" />
       <Property Name="GameStateSaver" />
-      <Property Name="TowerFactory" />
       <Property Name="StateOwner" />
-      <Property Name="GameState" />
+      <Property Name="CurrentTowerType" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Cells" />
+      <Property Name="TowerTypes" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameState" BaseTypeListCollapsed="true">
-    <Position X="3.75" Y="2.25" Width="3.25" />
+    <Position X="13" Y="4.5" Width="3.25" />
     <NestedTypes>
       <Struct Name="Core.GameState.Size" Collapsed="true">
         <TypeIdentifier>
@@ -83,7 +79,7 @@
       </Struct>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAIAARAQAAAAQggAIBIIIQgAgAABEAADAAAAAEIAQBE=</HashCode>
+      <HashCode>AAIAARA0AAAEQgwAIBIoIQgAgIABEAADEAAAAEIAQBE=</HashCode>
       <FileName>GameState.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -92,7 +88,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameStateOwner" BaseTypeListCollapsed="true">
-    <Position X="9" Y="0.5" Width="3.25" />
+    <Position X="9" Y="5.5" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAgIAAAAAAAAQAIAQAAAAAgAAAAAAAAAAAFAAAAAA=</HashCode>
       <FileName>GameStateOwner.cs</FileName>
@@ -107,40 +103,68 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Core.GameStateSaver">
-    <Position X="14.5" Y="8.5" Width="2.75" />
+    <Position X="1.25" Y="6.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
       <FileName>GameStateSaver.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Core.TowerFactory">
-    <Position X="9.75" Y="14.75" Width="2.25" />
+  <Class Name="Core.TowerFactory" Collapsed="true">
+    <Position X="22.5" Y="0.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>TowerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Core.DelegateCommand" Collapsed="true">
+    <Position X="20.75" Y="0.5" Width="1.5" />
     <NestedTypes>
-      <Enum Name="Core.TowerFactory.TowerType" Collapsed="true">
+      <Class Name="Core.DelegateCommand.DelegateCommandBase" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>TowerFactory.cs</NewMemberFileName>
+          <NewMemberFileName>DelegateCommand.cs</NewMemberFileName>
         </TypeIdentifier>
-      </Enum>
-      <Class Name="Core.TowerFactory.TowerInfo" Collapsed="true">
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="Core.DelegateCommand.VoidDelegateCommand" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>TowerFactory.cs</NewMemberFileName>
+          <NewMemberFileName>DelegateCommand.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Core.DelegateCommand.SingleParamDelegateCommand&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DelegateCommand.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Core.DelegateCommand.MultiParamDelegateCommand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DelegateCommand.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAABAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>TowerFactory.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DelegateCommand.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="Core.GameCells.ITower">
-    <Position X="1.25" Y="10.25" Width="1.5" />
+    <Position X="6" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAACAAAAAAAAAAAAACBQAAAAAAAIAAAAAAAAAAAA=</HashCode>
       <FileName>GameCells\ITower.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Owner" />
+    </ShowAsAssociation>
   </Interface>
+  <Enum Name="Core.TowerType" Collapsed="true">
+    <Position X="20.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIBAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TowerFactory.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

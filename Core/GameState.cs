@@ -8,7 +8,7 @@ using Core.GameCells;
 
 namespace Core
 {
-    public sealed class GameState : INotifyPropertyChanged, ICloneable
+    public sealed class GameState : ICloneable, IGameStateView
     {
         #region fields
 
@@ -250,7 +250,7 @@ namespace Core
 
         #endregion
 
-        public object Clone()   // todo rework to constructor
+        public object Clone()   // todo rework to constructor-builder
             =>
                 new GameState(new ObservableCollection<GameCell>(Cells.Select(cell => (GameCell)cell.Clone())), GridSize)
                     .SetScoreTo(Score)
